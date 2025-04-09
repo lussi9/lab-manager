@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "293012500791",
+    "project_id": "lab-manager-fb25b",
+    "storage_bucket": "lab-manager-fb25b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293012500791:android:7e8f59124a19b24ab8aab2",
+        "android_client_info": {
+          "package_name": "com.example.lab_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtBpGg4sPMVgsWcjSPX01wHDR-O1eWZZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

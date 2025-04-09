@@ -1,0 +1,78 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:lab_manager/model/entry.dart';
+
+class EntryProvider extends ChangeNotifier {
+  final List<Entry> _entries = [];
+
+  List<Entry> get entries => _entries;
+
+  Future<void> addEntry(Entry entry) async {
+    // Save the entry to Firestore
+    try {
+      final docRef =
+      await FirebaseFirestore.instance.collection('entries').add(entry.toJson());
+
+      //Update the entry so it has the correct id
+      final newEntry = Entry(
+          documentId: docRef.id,
+          date: entry.date,
+          description: entry.description);
+
+      _entries.add(newEntry);
+      _entries.sort((a, b) => b.date.compareTo(a.date)); // Sort after adding
+      notifyListeners();
+    } catch (e) {
+      // Handle any error
+      print('Error adding entry: $e');
+    }
+  }
+
+  Future<void> deleteEntry(Entry entry) async {
+    try {
+      // Delete from Firestore
+      await FirebaseFirestore.instance
+          .collection('entries')
+          .doc(entry.documentId)
+          .delete();
+
+      // Remove from the local list
+      _entries.remove(entry);
+      notifyListeners();
+    } catch (e) {
+      // Handle any error
+      print('Error deleting entry: $e');
+    }
+  }
+
+  Future<void> editEntry(Entry oldEntry, Entry newEntry) async {
+    try {
+      // Update in Firestore
+      await FirebaseFirestore.instance.collection('entries').doc(oldEntry.documentId).update(newEntry.toJson());
+
+      // Update in the local list
+      final index = _entries.indexOf(oldEntry);
+      _entries[index] = newEntry;
+      _entries[index].documentId = oldEntry.documentId; // Keep the same document ID
+      _entries.sort((a, b) => b.date.compareTo(a.date)); // Sort again after edit
+      notifyListeners();
+    } catch (e) {
+      // Handle any error
+      print('Error editing entry: $e');
+    }
+  }
+
+  Future<void> loadEntries() async {
+    final entriesData = await FirebaseFirestore.instance.collection('entries').get();
+
+    _entries.clear();
+
+    for (var doc in entriesData.docs) {
+      _entries.add(Entry.fromJson(doc.data(), doc.id));
+    }
+
+    _entries.sort((a, b) => b.date.compareTo(a.date));
+
+    notifyListeners();
+  }
+}
