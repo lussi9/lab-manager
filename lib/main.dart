@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lab_manager/page/entry_editing_page.dart';
 import 'package:lab_manager/provider/entry_provider.dart';
+import 'package:lab_manager/provider/timer_provider.dart';
 import 'package:lab_manager/widget/calculations_widget.dart';
 import 'widget/calendar_widget.dart';
 import 'page/event_editing_page.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
 
   final eventProvider = EventProvider();
   final entryProvider = EntryProvider();
+  final timerProvider = TimerProvider();
 
   // Load events and entries before the app starts
   await Future.wait([ //run them concurrently
@@ -31,6 +33,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => eventProvider),
         ChangeNotifierProvider(create: (_) => entryProvider),
+        ChangeNotifierProvider(create: (_) => timerProvider),
       ],
       child: MyApp(),
     ),

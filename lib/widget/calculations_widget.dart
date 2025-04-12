@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lab_manager/page/timer_page.dart';
 
 class CalculationsWidget extends StatelessWidget {
   @override
@@ -11,7 +12,10 @@ class CalculationsWidget extends StatelessWidget {
           Text('Calculations', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 12),
           _buildSquare(context, 'Timer', Colors.blue, () {
-            print('Timer tapped'); //TimerWidget()
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TimerPage()),
+            );
           }),
           _buildSquare(context, 'Calculator', Colors.green, () {
             print('Calculator tapped'); //CalculatorWidget()

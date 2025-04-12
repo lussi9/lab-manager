@@ -9,9 +9,9 @@ class EventViewingPage extends StatelessWidget{
   final Event event;
 
   const EventViewingPage({
-    Key? key, 
+    super.key, 
     required this.event
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

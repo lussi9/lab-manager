@@ -19,6 +19,7 @@ class EventEditingPage extends StatefulWidget{
 class _EventEditingPageState extends State<EventEditingPage>{
   final _formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
+  final descController = TextEditingController();
   late DateTime fromDate;
   late DateTime toDate;
 
@@ -31,6 +32,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
     } else{
       final event = widget.event!;
       titleController.text = event.title;
+      descController.text = event.description;
       fromDate = event.from;
       toDate = event.to;
     }
@@ -39,6 +41,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   void dispose() {
     titleController.dispose();
+    descController.dispose();
     super.dispose();
   }
 
@@ -100,43 +103,43 @@ class _EventEditingPageState extends State<EventEditingPage>{
   Widget buildFrom() => buildHeader(
     header: 'From',
     child: Row(
-    children: [
-      Expanded(
-        flex: 2,
-        child: buildDropdownField(
-          text: Utils.toDate(fromDate),
-          onClicked: () => pickFromDateTime(pickDate: true),
+      children: [
+        Expanded(
+          flex: 2,
+          child: buildDropdownField(
+            text: Utils.toDate(fromDate),
+            onClicked: () => pickFromDateTime(pickDate: true),
+          ),
         ),
-      ),
-      Expanded(
-        child: buildDropdownField(
-          text: Utils.toTime(fromDate),
-          onClicked: () => pickFromDateTime(pickDate: false),
+        Expanded(
+          child: buildDropdownField(
+            text: Utils.toTime(fromDate),
+            onClicked: () => pickFromDateTime(pickDate: false),
+          ),
         ),
-      ),
-    ],
-  )
+      ],
+    )
   );
 
   Widget buildTo() => buildHeader(
     header: 'To',
     child: Row(
-    children: [
-      Expanded(
-        flex: 2,
-        child: buildDropdownField(
-          text: Utils.toDate(toDate),
-          onClicked: () => pickToDateTime(pickDate: true),
+      children: [
+        Expanded(
+          flex: 2,
+          child: buildDropdownField(
+            text: Utils.toDate(toDate),
+            onClicked: () => pickToDateTime(pickDate: true),
+          ),
         ),
-      ),
-      Expanded(
-        child: buildDropdownField(
-          text: Utils.toTime(toDate),
-          onClicked: () => pickToDateTime(pickDate: false),
+        Expanded(
+          child: buildDropdownField(
+            text: Utils.toTime(toDate),
+            onClicked: () => pickToDateTime(pickDate: false),
+          ),
         ),
-      ),
-    ],
-  )
+      ],
+    )
   );
 
   Future pickFromDateTime({required bool pickDate}) async{
@@ -225,6 +228,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
             border: UnderlineInputBorder(),
             hintText: 'Add a description',
           ),
+          controller: descController,
         )
       ],
     )

@@ -11,7 +11,7 @@ class Event {
 
   Event({
     required this.title,
-    required this.description,
+    this.description = '',
     required this.from,
     required this.to,
     this.backgroundColor = Colors.lightGreen,
@@ -23,7 +23,7 @@ class Event {
     'description': description,
     'from': from,
     'to': to,
-    'backgroundColor': backgroundColor.value,
+    'backgroundColor': backgroundColor,
   };
 
   static Event fromJson(Map<String, dynamic> json, String id) => Event(

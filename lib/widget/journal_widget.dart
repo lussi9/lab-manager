@@ -38,7 +38,7 @@ class JournalWidgetState extends State<JournalWidget> {
 
   Widget buildEntry(Entry entry, int index) => Dismissible(
     key: Key(entry.documentId!),
-    /*background: Container(
+    background: Container(
       color: Colors.red,
       alignment: Alignment.centerLeft,
       padding: EdgeInsets.only(left: 16.0),
@@ -49,7 +49,7 @@ class JournalWidgetState extends State<JournalWidget> {
       alignment: Alignment.centerRight,
       padding: EdgeInsets.only(right: 16.0),
       child: Icon(Icons.delete, color: Colors.white),
-    ),*/
+    ),
     child: ListTile(
       leading: Column(
         children: <Widget>[
