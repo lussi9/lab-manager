@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lab_manager/page/calculator_page.dart';
 import 'package:lab_manager/page/timer_page.dart';
 
 class CalculationsWidget extends StatelessWidget {
@@ -18,7 +19,10 @@ class CalculationsWidget extends StatelessWidget {
             );
           }),
           _buildSquare(context, 'Calculator', Colors.green, () {
-            print('Calculator tapped'); //CalculatorWidget()
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CalculatorPage()),
+            );
           }),
           _buildSquare(context, 'Conversor', Colors.orange, () {
             print('Conversor tapped'); //ConversorWidget()

@@ -51,14 +51,20 @@ class JournalWidgetState extends State<JournalWidget> {
       child: Icon(Icons.delete, color: Colors.white),
     ),
     child: ListTile(
-      leading: Column(
-        children: <Widget>[
-        Text(
-          DateFormat.d().format(entry.date),
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.green),
+      leading: SizedBox(
+        height: 50, // Constrain the height of the leading widget
+        child: FittedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                DateFormat.d().format(entry.date),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+              Text( DateFormat.E().format(entry.date), style: TextStyle(fontSize: 16)),
+            ],
+          ),
         ),
-        Text(DateFormat.E().format(entry.date)),
-        ],
       ),
       title: Text(DateFormat.yMMMEd().format(entry.date),
         style: TextStyle(fontWeight: FontWeight.bold)),

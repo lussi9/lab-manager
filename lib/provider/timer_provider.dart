@@ -1,39 +1,70 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lab_manager/model/timer.dart';
+import 'package:lab_manager/model/countdown_timer.dart';
 
-class TimerProvider with ChangeNotifier {
-  List<Timer> timers = [];
+class TimerProvider extends ChangeNotifier {
+  final List<CountdownTimer> timers = [];
+  Timer? _ticker;
 
-  void addTimer(String label) {
-    timers.add(Timer(label: label));
-    notifyListeners();
-  }
-
-  void startTimer(int index) {
-    timers[index].stopwatch.start();
-    timers[index].isRunning = true;
+  void addTimer(String label, Duration duration) {
+    timers.add(CountdownTimer(label: label, duration: duration));
     notifyListeners();
   }
 
   void stopTimer(int index) {
-    timers[index].stopwatch.stop();
-    timers[index].isRunning = false;
-    notifyListeners();
+    if (index >= 0 && index < timers.length) {
+      timers[index].isRunning = false;
+      notifyListeners();
+    }
   }
+
+  void startTimer(int index) {
+    final timer = timers[index];
+    timer.endTime = DateTime.now().add(timer.remaining);
+    timer.isRunning = true;
+
+    _ticker?.cancel();
+    _ticker = Timer.periodic(Duration(seconds: 1), (_) {
+      final now = DateTime.now();
+      final newRemaining = timer.endTime!.difference(now);
+
+      if (newRemaining <= Duration.zero) {
+        timer.remaining = Duration.zero;
+        timer.isRunning = false;
+        _ticker?.cancel();
+        // Optionally trigger a sound or alert here
+      } else {
+        timer.remaining = newRemaining;
+      }
+
+      notifyListeners();
+    });
+  }
+
 
   void resetTimer(int index) {
-    timers[index].stopwatch.reset();
-    timers[index].elapsed = Duration.zero;
-    timers[index].isRunning = false;
-    notifyListeners();
+    if (index >= 0 && index < timers.length) {
+      timers[index].reset();
+      notifyListeners();
+    }
   }
 
-  void updateElapsed() {
+  void tick() {
     for (var timer in timers) {
-      if (timer.isRunning) {
-        timer.elapsed = timer.stopwatch.elapsed;
+      if (timer.isRunning && timer.remaining > Duration.zero) {
+        timer.remaining -= Duration(seconds: 1);
+        if (timer.remaining <= Duration.zero) {
+          timer.remaining = Duration.zero;
+          timer.isRunning = false;
+          _playAlarm(); // alarm when finished
+        }
       }
     }
     notifyListeners();
+  }
+
+  void _playAlarm() {
+    // You'll need to integrate an audio package like `audioplayers`
+    print("⏰ Timer done! Play alarm sound here");
   }
 }

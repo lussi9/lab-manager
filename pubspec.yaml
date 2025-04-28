@@ -32,10 +32,10 @@ dependencies:
     sdk: flutter
 
   #calendar
-  syncfusion_flutter_calendar: ^29.1.33
+  syncfusion_flutter_calendar: ^29.1.37
 
   #theme
-  syncfusion_flutter_core: ^29.1.33
+  syncfusion_flutter_core: ^29.1.37
 
   # handle dates
   intl: ^0.20.2
@@ -52,6 +52,10 @@ dependencies:
   http: ^1.1.0
   firebase_core: ^3.13.0
   cloud_firestore: ^5.6.6
+
+  duration_picker: ^1.0.0
+
+  math_expressions: ^2.0.1
 
 dev_dependencies:
   flutter_test:

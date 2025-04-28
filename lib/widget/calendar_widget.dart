@@ -40,6 +40,7 @@ class CalendarWidget extends StatelessWidget{
         fontSize: 12
       ),
       appointmentTimeTextFormat: 'HH:mm',
+      
     );
   }
 }
