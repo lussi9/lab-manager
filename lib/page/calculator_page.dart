@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lab_manager/widget/button.dart';
+import 'package:lab_manager/objects/button.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class CalculatorPage extends StatefulWidget {
@@ -23,6 +23,10 @@ class CalculatorPageState extends State<CalculatorPage> {
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Calculator'),
+        backgroundColor: Colors.green[800],
+      ),
       body: Column(
        children: [
         Expanded(

@@ -30,7 +30,7 @@ class _TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Timers')),
+      appBar: AppBar(title: Text('Timers'), backgroundColor: Colors.green[800]),
       body: Consumer<TimerProvider>(
         builder: (context, provider, _) {
           return ListView.builder(
@@ -77,6 +77,7 @@ class _TimerPageState extends State<TimerPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => _showAddTimerDialog(context),
+        backgroundColor: Colors.green[800],
       ),
     );
   }
