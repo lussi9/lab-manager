@@ -32,22 +32,13 @@ class ConverterMainPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             squareButton(title: 'Concentration', buttontapped: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ),
-              );
+              print('Concentration button tapped');
             }),
             squareButton(title: 'Volume', color: const Color.fromRGBO(56, 142, 60, 1), buttontapped: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ),
-              );
+              print('Volume button tapped');
             }),
             squareButton(title: 'Weight', color: const Color.fromRGBO(67, 160, 71, 1), buttontapped: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ),
-              );
+             print('Weight button tapped');
             }),
           ],
         ),
@@ -59,7 +50,7 @@ class ConverterMainPage extends StatelessWidget {
 ////////////////////////////////////
 ////////////////////////////////////
 
-
+/*
 
   @override
   Widget build(BuildContext context) {
@@ -82,4 +73,4 @@ class ConverterMainPage extends StatelessWidget {
         ),
       ),
     );
-  }
+  }*/

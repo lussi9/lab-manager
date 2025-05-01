@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lab_manager/page/entry_editing_page.dart';
 import 'package:lab_manager/provider/entry_provider.dart';
 import 'package:lab_manager/provider/timer_provider.dart';
+import 'package:lab_manager/provider/inventory_provider.dart';
 import 'package:lab_manager/widget/calculations_widget.dart';
 import 'widget/calendar_widget.dart';
 import 'page/event_editing_page.dart';
@@ -21,6 +22,7 @@ Future<void> main() async {
   final eventProvider = EventProvider();
   final entryProvider = EntryProvider();
   final timerProvider = TimerProvider();
+  final inventoryProvider = InventoryProvider();
 
   // Load events and entries before the app starts
   await Future.wait([ //run them concurrently
@@ -34,6 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => eventProvider),
         ChangeNotifierProvider(create: (_) => entryProvider),
         ChangeNotifierProvider(create: (_) => timerProvider),
+        ChangeNotifierProvider(create: (_) => inventoryProvider),
       ],
       child: MyApp(),
     ),
@@ -95,10 +98,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     body: TabBarView(
       controller: _tabController,
       children: [
-        JournalWidget(), // Replace with your Journal page widget
-        CalendarWidget(), // Your existing Calendar widget
-        CalculationsWidget(), // Replace with your Calculator page widget
-        InventoryWidget(), // Replace with your Inventory page widget
+        JournalWidget(),
+        CalendarWidget(),
+        CalculationsWidget(),
+        InventoryWidget(), 
       ],
     ),
     bottomNavigationBar: Material(
