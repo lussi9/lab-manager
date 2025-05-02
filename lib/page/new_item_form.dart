@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lab_manager/model/fungible.dart';
 import 'package:lab_manager/provider/inventory_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -61,20 +61,16 @@ class _AddNewItemFormState extends State<AddNewItemForm> {
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                // Save the new item to Firestore
-                await FirebaseFirestore.instance.collection('fungibles').add({
-                  'Fungible': _name,
-                  'Descripcion': _description,
-                  'Cantidad': _quantity,
-                });
-                Provider.of<InventoryProvider>(context, listen: false).loadFungibles();
+                Provider.of<InventoryProvider>(context, listen: false).addFungible(
+                  Fungible(name: _name,description: _description, quantity: _quantity),
+                );
                 Navigator.pop(context);
               }
             },
-            child: Text('Save'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green[800],
             ),
+            child: Text('Save', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

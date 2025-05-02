@@ -12,8 +12,6 @@ class CalculationsWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text('Calculations', style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 12),
           squareButton(title: 'Timer', buttontapped: () {
             Navigator.push(
               context,

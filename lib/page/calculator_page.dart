@@ -12,14 +12,15 @@ class CalculatorPage extends StatefulWidget {
 class CalculatorPageState extends State<CalculatorPage> {
   var userInput = '';
   var result = '0';
+  int parenthesesCount = 0;
   @override
   Widget build(BuildContext context) {
     List<String> buttons = [
-      'C', '+/-', '%', 'DEL', 
-      '7', '8', '9', '/',
-      '4', '5', '6', 'x',
-      '1', '2', '3', '-',
-      '.', '0', '=', '+',
+      'C', '√', '%', '/', 
+      '7', '8', '9', 'x',
+      '4', '5', '6', '-',
+      '1', '2', '3', '+',
+      '( )', '0', '.', '=',
     ];
 
     return Scaffold(
@@ -62,12 +63,17 @@ class CalculatorPageState extends State<CalculatorPage> {
                   buttonText: buttons[index],
                   color: Colors.grey[600],
                   textColor: Colors.white,
-                  buttontapped: () {
+                  buttonTapped: () {
+                    setState(() {
+                      userInput = userInput.substring(0, userInput.length - 1);
+                    });
+                  },
+                  longPress: () {
                     setState(() {
                       userInput = '';
                       result = '0';
                     });
-                  }
+                  },
                 );
               } 
 
@@ -84,7 +90,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                   buttonText: buttons[index],
                   color: Colors.grey[600],
                   textColor: Colors.white,
-                  buttontapped: () {
+                  buttonTapped: () {
                     setState(() {
                       userInput += buttons[index];
                     });
@@ -92,25 +98,43 @@ class CalculatorPageState extends State<CalculatorPage> {
                 );
               }
 
-              else if(index == 3){ // DEL
+              else if(index == 16){ // ()
                 return MyButton(
                   buttonText: buttons[index],
                   color: Colors.grey[600],
                   textColor: Colors.white,
-                  buttontapped: () {
+                  buttonTapped: () {
                     setState(() {
-                      userInput = userInput.substring(0, userInput.length - 1);
+                      if (parenthesesCount % 2 == 0) {
+                        userInput += '(';
+                      } else {
+                        userInput += ')';
+                      }
+                      parenthesesCount++;
                     });
                   }
                 );
               }
 
-              else if(index == 18) { // =
+              else if(index == 18){ // .
+                return MyButton(
+                  buttonText: buttons[index],
+                  color: Colors.grey[600],
+                  textColor: Colors.white,
+                  buttonTapped: () {
+                    setState(() {
+                      userInput += buttons[index];
+                    });
+                  }
+                );
+              }
+
+              else if(index == 19) { // =
                 return MyButton(
                   buttonText: buttons[index],
                   color: Colors.green[800],
                   textColor: Colors.white,
-                  buttontapped: () {
+                  buttonTapped: () {
                     setState(() {
                       equalPressed();
                     });
@@ -120,7 +144,7 @@ class CalculatorPageState extends State<CalculatorPage> {
 
               else{
                 return MyButton(
-                  buttontapped: (){
+                  buttonTapped: (){
                     setState(() {
                       userInput += buttons[index];
                     });
@@ -137,8 +161,6 @@ class CalculatorPageState extends State<CalculatorPage> {
       ),
     );
   }
-
-
   
   bool isOperator(String o){
     if(o =='/' || o =='x' || o =='-' || o =='+' || o =='=' ){
@@ -148,14 +170,29 @@ class CalculatorPageState extends State<CalculatorPage> {
     }
   }
 
-  void equalPressed(){
+  void equalPressed() {
     String finalUserInput = userInput;
-    finalUserInput = userInput.replaceAll('x', '*');
 
-    Parser p = Parser();
-    Expression exp = p.parse(finalUserInput);
-    ContextModel cm = ContextModel();
-    double eval = exp.evaluate(EvaluationType.REAL, cm);
-    result = eval.toString(); //.round
+    finalUserInput = finalUserInput.replaceAll('x', '*'); // Replace 'x' with '*'
+    finalUserInput = finalUserInput.replaceAll('√', 'sqrt('); // Replace '√' with 'sqrt('
+
+    int openParentheses = '('.allMatches(finalUserInput).length;
+    int closeParentheses = ')'.allMatches(finalUserInput).length;
+    finalUserInput += ')' * (openParentheses - closeParentheses);
+
+    try {
+      GrammarParser p = GrammarParser();
+      Expression exp = p.parse(finalUserInput);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+      setState(() {
+        result = eval.toString(); // Display the result
+      });
+    } catch (e) {
+      setState(() {
+        result = "Error"; // Handle invalid expressions
+      });
+    }
   }
 }

@@ -6,14 +6,13 @@ class InventoryProvider extends ChangeNotifier {
   final List<Fungible> _fungibles = [];
 
   List<Fungible> get fungibles => _fungibles;
+  String selectedOrder = "name";
 
   Future<void> addFungible(Fungible fungible) async {
-    // Save the Fungible to Firestore
     try {
       final docRef =
       await FirebaseFirestore.instance.collection('fungibles').add(fungible.toJson());
 
-      //Update the Fungible so it has the correct id
       final newFungible = Fungible(
           documentId: docRef.id,
           name: fungible.name,
@@ -21,7 +20,7 @@ class InventoryProvider extends ChangeNotifier {
           quantity: fungible.quantity);
 
       _fungibles.add(newFungible);
-      _fungibles.sort((a, b) => b.quantity.compareTo(a.quantity)); // Sort after adding
+      orderList();
       notifyListeners();
     } catch (e) {
       // Handle any error
@@ -31,13 +30,11 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> deleteFungible(Fungible fungible) async {
     try {
-      // Delete from Firestore
       await FirebaseFirestore.instance
           .collection('fungibles')
           .doc(fungible.documentId)
           .delete();
 
-      // Remove from the local list
       _fungibles.remove(fungible);
       notifyListeners();
     } catch (e) {
@@ -48,14 +45,12 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> editFungible(Fungible oldFungible, Fungible newFungible) async {
     try {
-      // Update in Firestore
       await FirebaseFirestore.instance.collection('fungibles').doc(oldFungible.documentId).update(newFungible.toJson());
 
-      // Update in the local list
       final index = _fungibles.indexOf(oldFungible);
       _fungibles[index] = newFungible;
       _fungibles[index].documentId = oldFungible.documentId; // Keep the same document ID
-      _fungibles.sort((a, b) => b.quantity.compareTo(a.quantity)); // Sort again after edit
+      orderList();
       notifyListeners();
     } catch (e) {
       // Handle any error
@@ -65,15 +60,25 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> loadFungibles() async {
     final fungiblesData = await FirebaseFirestore.instance.collection('fungibles').get();
-
     _fungibles.clear();
 
     for (var doc in fungiblesData.docs) {
       _fungibles.add(Fungible.fromJson(doc.data(), doc.id));
     }
 
-    _fungibles.sort((a, b) => b.quantity.compareTo(a.quantity));
-
+    orderList();
     notifyListeners();
+  }
+
+  void setOrder(String orderBy) async {
+    selectedOrder = orderBy;
+  }
+
+  void orderList() {
+    if (selectedOrder == "name") {
+      _fungibles.sort((a, b) => a.name.compareTo(b.name));
+    } else if (selectedOrder == "quantity") {
+      _fungibles.sort((a, b) => a.quantity.compareTo(b.quantity));
+    }
   }
 }

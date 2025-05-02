@@ -13,6 +13,9 @@ class InventoryWidget extends StatefulWidget {
 }
 
 class InventoryWidgetState extends State<InventoryWidget> {
+  String _selectedOrder = "name";
+  int _quantityLimit = 2;
+
   @override
   void initState(){
     super.initState();
@@ -25,50 +28,104 @@ class InventoryWidgetState extends State<InventoryWidget> {
     return Scaffold(
       body: Column(
         children: [
-          if (inventoryProvider.fungibles.isEmpty)
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  value: _selectedOrder,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedOrder = value!;
+                      Provider.of<InventoryProvider>(context, listen: false).setOrder(value);
+                      Provider.of<InventoryProvider>(context, listen: false).orderList();
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem(
+                      value: "name",
+                      child: Text("Order by Name"),
                     ),
-                    builder: (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: 16,
-                        left: 16,
-                        right: 16,
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                    DropdownMenuItem(
+                      value: "quantity",
+                      child: Text("Order by Quantity"),
+                    ),
+                  ],
+                  hint: Text("Order List"),
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.grey[600]),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                       ),
-                      child: AddNewItemForm(), // Custom widget for the form
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[800], // Green background
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
-                  ),
+                      builder: (context) {
+                        return StatefulBuilder(
+                          builder: (context, setModalState) {
+                            return Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "Settings",
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 16),
+                                  ListTile(
+                                    title: Text("Change quantity limit"),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.remove),
+                                          onPressed: () {
+                                            if (_quantityLimit > 0) {
+                                              setState(() {
+                                                _quantityLimit--; // Decrement the quantity limit
+                                              });
+                                              setModalState(() {
+                                                _quantityLimit;
+                                              });
+                                            }
+                                          },
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          _quantityLimit.toString(), // Dynamically displays the updated quantity limit
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        SizedBox(width: 8),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () {
+                                            setState(() {
+                                              _quantityLimit++; // Increment the quantity limit
+                                            });
+                                            setModalState(() {
+                                              _quantityLimit;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
-                child: Text(
-                  "Add New Item",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ),
+              ],
             ),
-          if (inventoryProvider.fungibles.isEmpty)
-            Expanded(
-              child: Center(
-                child: Text(
-                  "No fungibles found",
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              ),
-            ),
+          ),
           if (inventoryProvider.fungibles.isNotEmpty)
             Expanded(
               child: ListView.separated(
@@ -85,41 +142,40 @@ class InventoryWidgetState extends State<InventoryWidget> {
                 ),
               ),
             ),
-          if (inventoryProvider.fungibles.isNotEmpty)
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    builder: (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: 16,
-                        left: 16,
-                        right: 16,
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                      ),
-                      child: AddNewItemForm(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[800],
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   ),
-                ),
-                child: Text(
-                  "Add New Item",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  builder: (context) => Padding(
+                    padding: EdgeInsets.only(
+                      top: 16,
+                      left: 16,
+                      right: 16,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                    ),
+                    child: AddNewItemForm(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[800],
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
+              child: Text(
+                "Add New Item",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
+          ),
         ],
       ),
     );
@@ -147,7 +203,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
         mainAxisSize: MainAxisSize.min, // Ensures the Row takes minimal space
         children: [
           IconButton(
-            icon: Icon(Icons.minimize, color: Colors.grey),
+            icon: Icon(Icons.remove, color: Colors.grey),
             onPressed: () async {
               if (fungible.quantity > 0) {
                 await FirebaseFirestore.instance.collection("fungibles")
@@ -156,13 +212,15 @@ class InventoryWidgetState extends State<InventoryWidget> {
               }
             },
           ),
+          SizedBox(width: 8),
           Text(
             fungible.quantity.toString(),
             style: TextStyle(
               fontSize: 20,
-              color: fungible.quantity > 1 ? Colors.green : Colors.red,
+              color: fungible.quantity >= _quantityLimit ? Colors.green : Colors.red,
             ),
           ),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(Icons.add, color: Colors.grey),
             onPressed: () async {

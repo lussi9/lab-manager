@@ -33,6 +33,14 @@ class _TimerPageState extends State<TimerPage> {
       appBar: AppBar(title: Text('Timers'), backgroundColor: Colors.green[800]),
       body: Consumer<TimerProvider>(
         builder: (context, provider, _) {
+          if (provider.timers.isEmpty) {
+            return Center(
+              child: Text(
+                'No timers available.',
+                style: TextStyle(fontSize: 20, color: Colors.grey),
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: provider.timers.length,
             itemBuilder: (context, index) {
