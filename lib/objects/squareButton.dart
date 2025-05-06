@@ -9,7 +9,7 @@ class squareButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    return Expanded(
+    return Flexible(
       child: GestureDetector(
         onTap: buttontapped,
         child: Container(
@@ -24,7 +24,7 @@ class squareButton extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
               textAlign: TextAlign.center,
             ),

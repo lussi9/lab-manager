@@ -16,6 +16,7 @@ class EntryProvider extends ChangeNotifier {
       //Update the entry so it has the correct id
       final newEntry = Entry(
           documentId: docRef.id,
+          title: entry.title,
           date: entry.date,
           description: entry.description);
 

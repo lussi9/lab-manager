@@ -19,12 +19,14 @@ class EntryEditingPage extends StatefulWidget {
 
 class _EntryEditingPageState extends State<EntryEditingPage> {
   final _formKey = GlobalKey<FormState>();
+  final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   late DateTime fromDate;
 
   @override
   void initState() {
     super.initState();
+    titleController.text = widget.entry?.title ?? '';
     fromDate = DateTime.now();
     fromDate = widget.entry?.date ?? DateTime.now();
     descriptionController.text = widget.entry?.description ?? '';
@@ -32,6 +34,7 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
 
   @override
   void dispose() {
+    titleController.dispose();
     descriptionController.dispose();
     super.dispose();
   }
@@ -41,17 +44,70 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
     appBar: AppBar(
       leading: const CloseButton(),
       actions: buildEditingActions(),
+      backgroundColor: Colors.green[800],
     ),
-    body: SingleChildScrollView(
+    body: Container(
       padding: const EdgeInsets.all(12),
       child: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
           children: <Widget>[
-            buildDate(),
-            const SizedBox(height: 12),
-            buildDescription(),
+            ListTile(
+              contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+              title: TextFormField(
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+                cursorColor: Colors.green[800],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Add Title',
+                ),
+                validator: (title) =>
+                  title != null && title.isEmpty ? 'Title cannot be empty' : null,
+                controller: titleController,
+              ),
+            ),
+            const Divider(
+              height: 1.0,
+              thickness: 1,
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.all(5),
+              leading: Icon(
+                Icons.subject,
+                color: Colors.grey,
+              ),
+              title: TextFormField(
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Add a description',
+                ),
+                controller: descriptionController,
+                validator: (value) => value != null && value.isEmpty
+                ? 'The description cannot be empty' : null,
+              )
+            ),
+            ListTile( // Date
+              contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+              leading: Icon(
+                Icons.date_range,
+                color: Colors.grey),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 7,
+                    child: GestureDetector(
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(fromDate),
+                        textAlign: TextAlign.left,
+                      ),
+                      onTap: () async {
+                        pickFromDateTime(pickDate: true);
+                      })),
+            ])),
           ],
         ),
       ),
@@ -59,15 +115,17 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
   );
 
   List<Widget> buildEditingActions() => [
-    ElevatedButton.icon(
+    IconButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
+        iconColor: Colors.white,
+        iconSize: 22,
       ),
       onPressed: saveEntry,
-      icon: const Icon(Icons.done),
-      label: const Text('SAVE'),
+      icon: Icon(Icons.done),
     ),
+    SizedBox(width: 12),
   ];
 
   Widget buildDate() => SizedBox(
@@ -110,25 +168,12 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
     }
   }
 
-  Widget buildDescription() => TextFormField(
-    style: TextStyle(color: Colors.white),
-    decoration: const InputDecoration(
-      border: OutlineInputBorder(),
-      hintText: 'Add Description',
-      hintStyle: TextStyle(color: Colors.grey),
-    ),
-    controller: descriptionController,
-    validator: (value) => value != null && value.isEmpty
-        ? 'The description cannot be empty'
-        : null,
-    maxLines: 5,
-  );
-
   Future saveEntry() async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       final entryProvider = Provider.of<EntryProvider>(context, listen: false);
       final entry = Entry(
+        title: titleController.text,
         date: fromDate,
         description: descriptionController.text,
       );
@@ -139,6 +184,7 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
         } else {
           final entryUpdate = Entry(
             documentId: widget.entry!.documentId,
+            title: titleController.text,
             date: fromDate,
             description: descriptionController.text,
           );

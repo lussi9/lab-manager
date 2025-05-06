@@ -1,76 +1,172 @@
 import 'package:flutter/material.dart';
-import 'package:lab_manager/objects/squareButton.dart';
 
-class ConverterMainPage extends StatelessWidget {
-  ConverterMainPage({super.key});
+class ConverterView extends StatefulWidget {
+  @override
+  _ConverterViewState createState() => _ConverterViewState();
+}
 
-  final List<Map<String, dynamic>> unitCategories = [
-    {
-      'label': 'Weight',
-      'units': ['Kilograms', 'Grams', 'Pounds'],
+class _ConverterViewState extends State<ConverterView> {
+  String? selectedCategory;
+  String? fromUnit;
+  String? toUnit;
+  double? inputValue;
+  double? result;
+
+  bool isInputValid = true;
+
+  static const Map<String, Map<String, double>> conversionRates = {
+    'Weight': {
+      'Tons': 0.001,
+      'Kilograms': 1.0,
+      'Grams': 1000.0,
+      'Milligrams': 1000000.0,
+      'Micrograms': 1000000000.0,
+      'Nanograms': 1000000000000.0,
+      'Pounds': 2.20462,
     },
-    {
-      'label': 'Volume',
-      'units': ['Liters', 'Milliliters', 'Gallons'],
+    'Volume': {
+      'Liters': 1.0,
+      'Milliliters': 1000.0,
+      'Micrograms': 1000000.0,
+      'Nanograms': 1000000000.0,
+      'Cubic Meters': 0.001,
     },
-    {
-      'label': 'Concentration',
-      'units': ['Molar', 'Percent', 'ppm'],
+    'Concentration': {
+      'Molar': 1.0,
+      'Millimolar': 1000.0,
+      'Micromolar': 1000000.0,
+      'Nanomolar': 1000000000.0,
+      'Picomolar': 1000000000000.0,
+      'Femtomolar': 1000000000000000.0,
+      'Percent': 100.0,
+      'ppm': 1000000.0,
     },
-  ];
+  };
+
+  List<String> get units {
+    if (selectedCategory == null) return [];
+    return conversionRates[selectedCategory!]!.keys.toList();
+  }
+
+  void convert() {
+    if (fromUnit == null || toUnit == null || inputValue == null) return;
+
+    final rates = conversionRates[selectedCategory!]!;
+    final double baseValue = inputValue! / rates[fromUnit]!;
+    final double converted = baseValue * rates[toUnit]!;
+
+    setState(() {
+      result = converted;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Converter'),
-        backgroundColor: Colors.green[800]
+        backgroundColor: Colors.green[800],
       ),
-      body: Container(
-        padding: const EdgeInsets.all(12),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            squareButton(title: 'Concentration', buttontapped: () {
-              print('Concentration button tapped');
-            }),
-            squareButton(title: 'Volume', color: const Color.fromRGBO(56, 142, 60, 1), buttontapped: () {
-              print('Volume button tapped');
-            }),
-            squareButton(title: 'Weight', color: const Color.fromRGBO(67, 160, 71, 1), buttontapped: () {
-             print('Weight button tapped');
-            }),
+          children: [
+            // Dropdown to select the category
+            DropdownButton<String>(
+              isExpanded: true,
+              hint: Text('Select Category'),
+              value: selectedCategory,
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value;
+                  fromUnit = null;
+                  toUnit = null;
+                  inputValue = null;
+                  result = null;
+                });
+              },
+              items: conversionRates.keys .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+            ),
+            SizedBox(height: 20),
+            // Dropdown to select the "From Unit"
+            DropdownButton<String>(
+              hint: Text('From Unit'),
+              value: fromUnit,
+              onChanged: (value) {
+                setState(() {
+                  fromUnit = value;
+                  convert();
+                });
+              },
+              items: units.map((unit) => DropdownMenuItem(
+                        value: unit,
+                        child: Text(unit),
+                      ))
+                  .toList(),
+            ),
+            // Dropdown to select the "To Unit"
+            DropdownButton<String>(
+              hint: Text('To Unit'),
+              value: toUnit,
+              onChanged: (value) {
+                setState(() {
+                  toUnit = value;
+                  convert();
+                });
+              },
+              items: units.map((unit) => DropdownMenuItem(
+                        value: unit,
+                        child: Text(unit),
+                      ))
+                  .toList(),
+            ),
+            SizedBox(height: 20),
+            // Input field for the value to convert
+            TextField(
+              keyboardType: TextInputType.number,
+              cursorColor: Colors.green[800],
+              decoration: InputDecoration(
+                labelText: 'Enter value' ,
+                labelStyle: TextStyle(color: Colors.grey),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green[800]!),
+                ),
+                errorText: isInputValid ? null : 'Invalid input', // Show error message
+              ),
+              onChanged: (val) {
+                setState(() {
+                  if (val.isEmpty) {
+                    inputValue = null;
+                    result = null;
+                    isInputValid = true;
+                  } else {
+                    final parsed = double.tryParse(val);
+                    if (parsed != null) {
+                      inputValue = parsed;
+                      isInputValid = true; // Input is valid
+                      convert();
+                    } else {
+                      isInputValid = false; // Input is invalid
+                    }
+                  }
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            // Display the result
+            Text(
+              result == null
+                  ? 'Result: '
+                  : 'Result: ${result!.toStringAsFixed(4)}',
+              style: TextStyle(fontSize: 20),
+            ),
           ],
         ),
-      )
+      ),
     );
   }
 }
-
-////////////////////////////////////
-////////////////////////////////////
-
-/*
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: unitCategories.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Unit Converter'),
-          bottom: TabBar(
-            tabs: unitCategories.map((cat) => Tab(text: cat['label'])).toList(),
-          ),
-        ),
-        body: TabBarView(
-          children: unitCategories.map((cat) {
-            return ConverterView(
-              category: cat['label'],
-              units: cat['units'],
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }*/

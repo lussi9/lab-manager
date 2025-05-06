@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lab_manager/page/calculator_page.dart';
 import 'package:lab_manager/page/timer_page.dart';
+//import 'package:lab_manager/page/main_converter_page.dart';
 import 'package:lab_manager/page/converter_page.dart';
 import 'package:lab_manager/objects/squareButton.dart';
 
@@ -27,7 +28,7 @@ class CalculationsWidget extends StatelessWidget {
           squareButton(title: 'Converter', color: const Color.fromRGBO(67, 160, 71, 1), buttontapped: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ConverterMainPage()),
+              MaterialPageRoute(builder: (context) => ConverterView()),
             );
           }),
         ],

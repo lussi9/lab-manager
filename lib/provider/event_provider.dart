@@ -29,7 +29,9 @@ class EventProvider extends ChangeNotifier {
           description: event.description,
           from: event.from,
           to: event.to,
-          backgroundColor: event.backgroundColor);
+          background: event.background,
+          isAllDay: event.isAllDay,
+          recurrenceRule: event.recurrenceRule,);
 
       _events.add(newEvent);
       notifyListeners();
@@ -58,6 +60,10 @@ class EventProvider extends ChangeNotifier {
 
   Future<void> editEvent(Event oldEvent, Event newEvent) async {
     try {
+      if (oldEvent.documentId == null) {
+        throw Exception('Event ID is null');
+      }
+
       // Update in Firestore
       await FirebaseFirestore.instance
           .collection('events')
@@ -65,8 +71,11 @@ class EventProvider extends ChangeNotifier {
           .update(newEvent.toJson());
 
       // Update in the local list
-      final index = _events.indexOf(oldEvent);
-      _events[index] = newEvent;
+      final index = _events.indexWhere((event) => event.documentId == oldEvent.documentId);
+      if (index != -1) {
+        _events[index] = newEvent;
+        notifyListeners();
+      }
       notifyListeners();
     } catch (e) {
       // Handle any error

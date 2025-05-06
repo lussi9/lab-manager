@@ -1,3 +1,4 @@
+import 'package:lab_manager/objects/notification.dart';
 import '../model/event.dart';
 import 'package:flutter/material.dart';
 import 'package:lab_manager/utils.dart';
@@ -5,11 +6,11 @@ import 'package:provider/provider.dart';
 import '../provider/event_provider.dart';
 
 class EventEditingPage extends StatefulWidget{
-  final Event? event;
+  final Event? selectedEvent;
 
-  const EventEditingPage({
+  EventEditingPage({
     Key? key,
-    this.event,
+    this.selectedEvent,
   }) : super(key: key);
 
   @override
@@ -22,19 +23,40 @@ class _EventEditingPageState extends State<EventEditingPage>{
   final descController = TextEditingController();
   late DateTime fromDate;
   late DateTime toDate;
+  bool _isAllDay = false;
+  bool _receiveNotification = false;
+
+  final List<Color> _colorCollection = [
+    Colors.red,
+    Colors.blue,
+    Colors.green,
+    Colors.yellow,
+    Colors.orange,
+  ];
+
+  final List<String> _colorNames = [
+    'Red',
+    'Blue',
+    'Green',
+    'Yellow',
+    'Orange',
+  ];
+
+  int _selectedColorIndex = 0;
 
   @override
   void initState(){
     super.initState();
-    if(widget.event == null){
+    if(widget.selectedEvent == null){
       fromDate = DateTime.now();
       toDate = DateTime.now().add(Duration(hours: 2));
     } else{
-      final event = widget.event!;
+      final event = widget.selectedEvent!;
       titleController.text = event.title;
       descController.text = event.description;
       fromDate = event.from;
       toDate = event.to;
+      _isAllDay = event.isAllDay;
     }
   }
 
@@ -48,99 +70,245 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
+      backgroundColor: Colors.green[800],
+      title: Text('Event details'),
       leading: CloseButton(),
       actions: buildEditingActions(),
     ),
-    body: SingleChildScrollView(
+    body: Container(
       padding: EdgeInsets.all(12),
       child: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
+          padding: const EdgeInsets.all(0),
           children: <Widget>[
-            buildTitle(),
-            SizedBox(height: 32),
-            buildDateTimePickers(),
-            SizedBox(height: 32),
-            buildDescription(),
+            ListTile(
+              contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+              leading: const Text(''),
+              title: TextFormField(
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+                cursorColor: Colors.green[800],
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Add Title',
+                ),
+                onFieldSubmitted: (_) => saveForm(),
+                validator: (title) =>
+                  title != null && title.isEmpty ? 'Title cannot be empty' : null,
+                controller: titleController,
+              ),
+            ),
+            const Divider(
+              height: 1.0,
+              thickness: 1,
+            ),
+            ListTile( //All day
+              contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+              leading: Icon(
+                Icons.access_time,
+                color: Colors.grey,
+              ),
+              title: Row(children: <Widget>[
+                const Expanded(
+                  child: Text('All day', style: TextStyle(fontSize: 18),),
+                ),
+                Expanded(
+                    child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Switch(
+                          value: _isAllDay,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isAllDay = value;
+                            });
+                          },
+                        ))),
+              ])),
+            ListTile( //from date
+              contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+              leading: const Text(''),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 7,
+                    child: GestureDetector(
+                      child: Text(
+                        Utils.toDate(fromDate),
+                        textAlign: TextAlign.left),
+                      onTap: () async {
+                        pickFromDateTime(pickDate: true);
+                      }),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: _isAllDay
+                      ? const Text('')
+                      : GestureDetector(
+                        child: Text(
+                          Utils.toTime(fromDate),
+                          textAlign: TextAlign.right,
+                        ),
+                        onTap: () async {
+                          pickFromDateTime(pickDate: false);
+                        })),
+              ])),
+            ListTile( //to date
+              contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+              leading: const Text(''),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    flex: 7,
+                    child: GestureDetector(
+                        child: Text(
+                          Utils.toDate(toDate),
+                          textAlign: TextAlign.left,
+                        ),
+                        onTap: () async {
+                          pickToDateTime(pickDate: true);
+                        }),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: _isAllDay
+                      ? const Text('')
+                      : GestureDetector(
+                        child: Text(
+                          Utils.toTime(toDate),
+                          textAlign: TextAlign.right,
+                        ),
+                        onTap: () async {
+                          pickToDateTime(pickDate: false);
+                        })),     
+                  ])),
+            const Divider(
+              height: 1.0,
+              thickness: 1,
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+              leading: Icon(Icons.lens,
+                  color: _colorCollection[_selectedColorIndex]),
+              title: Text(
+                _colorNames[_selectedColorIndex],
+              ),
+              onTap: () {
+                showDialog<Widget>(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Pick a Color'),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(_colorCollection.length, (index) {
+                            return ListTile(
+                              leading: Icon(Icons.lens, color: _colorCollection[index]),
+                              title: Text(_colorNames[index]),
+                              onTap: () {
+                                setState(() {
+                                  _selectedColorIndex = index;
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          }),
+                        ),
+                      ),
+                    );
+                  },
+                ).then((dynamic value) => setState(() {}));
+              },
+            ),
+            const Divider(
+              height: 1.0,
+              thickness: 1,
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.all(5),
+              leading: Icon(
+                Icons.subject,
+                color: Colors.grey,
+              ),
+              title: TextFormField(
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Add a description',
+                ),
+                controller: descController,
+                onFieldSubmitted: (_) => saveForm(),
+              )
+            ),
+            const Divider(
+              height: 1.0,
+              thickness: 1,
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.all(5),
+              leading: Icon(
+                Icons.notifications,
+                color: Colors.grey,
+              ),
+              title: Row(children: <Widget>[
+                const Expanded(
+                  child: Text('Receive notification', style: TextStyle(fontSize: 18),),
+                ),
+                Expanded(
+                    child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Switch(
+                          value: _receiveNotification,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _receiveNotification = value;
+                              if(_receiveNotification){
+                                NotificationService().showNotification(
+                                  id: 0,
+                                  title: 'Event Reminder',
+                                  body: 'You have an event scheduled for ${Utils.toDate(fromDate)} at ${Utils.toTime(fromDate)}',
+                                );
+                              }
+                            });
+                          },
+                        ))),
+              ])),
           ],
+        ),
       ),
-      ),
+    ),
+    floatingActionButton: widget.selectedEvent == null
+    ? const Text(''): FloatingActionButton(
+      onPressed: () {
+        final provider = Provider.of<EventProvider>(context, listen: false);
+        if (widget.selectedEvent != null) {
+          provider.deleteEvent(widget.selectedEvent!);
+          Navigator.pop(context);
+        }
+      },
+      backgroundColor: Colors.red,
+      child:
+        const Icon(Icons.delete_outline, color: Colors.white),
     ),
   );
 
   List<Widget> buildEditingActions()=> [
-    ElevatedButton.icon(
+    IconButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
+        iconColor: Colors.white,
+        iconSize: 22,
       ),
       onPressed: saveForm,
       icon: Icon(Icons.done),
-      label: Text('SAVE'),
     ),
+    SizedBox(width: 12),
   ];
-
-  Widget buildTitle() => TextFormField(
-    style: TextStyle(fontSize: 24),
-    decoration: InputDecoration(
-      border: UnderlineInputBorder(),
-      hintText: 'Add Title',
-    ),
-    onFieldSubmitted: (_) => saveForm(),
-    validator: (title) =>
-      title != null && title.isEmpty ? 'Title cannot be empty' : null,
-    controller: titleController,
-  );
-
-  Widget buildDateTimePickers() => Column(
-    children: [
-      buildFrom(),
-      buildTo(),
-    ],
-  );
-
-  Widget buildFrom() => buildHeader(
-    header: 'From',
-    child: Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: buildDropdownField(
-            text: Utils.toDate(fromDate),
-            onClicked: () => pickFromDateTime(pickDate: true),
-          ),
-        ),
-        Expanded(
-          child: buildDropdownField(
-            text: Utils.toTime(fromDate),
-            onClicked: () => pickFromDateTime(pickDate: false),
-          ),
-        ),
-      ],
-    )
-  );
-
-  Widget buildTo() => buildHeader(
-    header: 'To',
-    child: Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: buildDropdownField(
-            text: Utils.toDate(toDate),
-            onClicked: () => pickToDateTime(pickDate: true),
-          ),
-        ),
-        Expanded(
-          child: buildDropdownField(
-            text: Utils.toTime(toDate),
-            onClicked: () => pickToDateTime(pickDate: false),
-          ),
-        ),
-      ],
-    )
-  );
 
   Future pickFromDateTime({required bool pickDate}) async{
     final date = await pickDateTime(fromDate, pickDate: pickDate);
@@ -195,60 +363,25 @@ class _EventEditingPageState extends State<EventEditingPage>{
     }
   }
 
-  Widget buildDropdownField({
-    required String text,
-    required VoidCallback onClicked,
-  }) =>
-    ListTile(
-      title: Text(text),
-      trailing: Icon(Icons.arrow_drop_down),
-      onTap: onClicked,
-    );
-
-  Widget buildHeader({
-    required String header,
-    required Widget child,
-  }) =>
-  Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(header, style: TextStyle(fontWeight: FontWeight.bold)),
-      child,
-    ],
-  );
-
-  Widget buildDescription() => buildHeader(
-    header: 'Description',
-    child: Column(
-      children: [
-        SizedBox(height: 8),
-        TextFormField(
-          maxLines: 5,
-          decoration: InputDecoration(
-            border: UnderlineInputBorder(),
-            hintText: 'Add a description',
-          ),
-          controller: descController,
-        )
-      ],
-    )
-  );
-
   Future saveForm() async{
     final isValid = _formKey.currentState!.validate();
     if(isValid){
       final event = Event(
+        documentId: widget.selectedEvent?.documentId,
         title: titleController.text,
         description: '',
         from: fromDate,
         to: toDate,
+        background: _colorCollection[_selectedColorIndex],
+        isAllDay: _isAllDay,
+        //recurrenceRule: _recurrenceRule,
       );
 
-      final isEditing = widget.event != null;
+      final isEditing = widget.selectedEvent != null;
       final provider = Provider.of<EventProvider>(context, listen: false);
 
       if(isEditing){
-        provider.editEvent(event, widget.event!);
+        provider.editEvent(widget.selectedEvent!, event);
       } else{
         provider.addEvent(event);
       }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lab_manager/objects/notification.dart';
 import 'package:lab_manager/page/entry_editing_page.dart';
 import 'package:lab_manager/provider/entry_provider.dart';
 import 'package:lab_manager/provider/timer_provider.dart';
@@ -18,6 +19,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  NotificationService().initNotification(); // Initialize the notification service
 
   final eventProvider = EventProvider();
   final entryProvider = EntryProvider();

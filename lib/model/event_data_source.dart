@@ -1,7 +1,7 @@
 import 'dart:ui';
-
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:lab_manager/model/event.dart';
+import 'package:flutter/material.dart';
 
 class EventDataSource extends CalendarDataSource{
   EventDataSource(List<Event> events){
@@ -20,10 +20,15 @@ class EventDataSource extends CalendarDataSource{
   String getSubject(int index) => getEvent(index).title;
 
   @override
-  Color getColor(int index) => getEvent(index).backgroundColor;
-
-  @override
   String getNotes(int index) => getEvent(index).description;
 
+  @override
+  Color getColor(int index) => getEvent(index).background;
+
+  @override
+  bool isAllDay(int index) => getEvent(index).isAllDay;
+
+  @override
+  String getRecurrenceRule(int index) => appointments![index].recurrenceRule;
 
 }
