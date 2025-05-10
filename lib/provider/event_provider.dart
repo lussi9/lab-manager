@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lab_manager/model/event.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final userId = FirebaseAuth.instance.currentUser?.uid;
 
 class EventProvider extends ChangeNotifier {
   final List<Event> _events = [];
@@ -19,6 +22,8 @@ class EventProvider extends ChangeNotifier {
     // Save the event to Firestore
     try {
       final docRef = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
           .collection('events')
           .add(event.toJson());
 
@@ -45,6 +50,8 @@ class EventProvider extends ChangeNotifier {
     try {
       // Delete from Firestore
       await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
           .collection('events')
           .doc(event.documentId)
           .delete();
@@ -66,6 +73,8 @@ class EventProvider extends ChangeNotifier {
 
       // Update in Firestore
       await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
           .collection('events')
           .doc(oldEvent.documentId)
           .update(newEvent.toJson());
@@ -85,7 +94,7 @@ class EventProvider extends ChangeNotifier {
 
   Future<void> loadEvents() async {
     final eventsData =
-    await FirebaseFirestore.instance.collection('events').get();
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('events').get();
 
     _events.clear();
 

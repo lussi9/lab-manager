@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lab_manager/model/entry.dart';
 import 'package:provider/provider.dart';
-
-import '../provider/entry_provider.dart';
+import 'package:lab_manager/provider/entry_provider.dart';
 
 class EntryEditingPage extends StatefulWidget {
   final Entry? entry; // Optional existing entry

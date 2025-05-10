@@ -113,8 +113,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             ),
           );
         },
-      ),
-    ],
+      ),],
     ),
     body: TabBarView(
       controller: _tabController,
@@ -206,7 +205,7 @@ class _AuthUserPageState extends State<AuthUserPage> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => RegisterScreen(), // Navigate to login screen
+                  builder: (context) => RegisterScreen(),
                 ),
               );
             },

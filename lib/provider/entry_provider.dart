@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lab_manager/model/entry.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final userId = FirebaseAuth.instance.currentUser?.uid;
 
 class EntryProvider extends ChangeNotifier {
   final List<Entry> _entries = [];
@@ -11,7 +14,8 @@ class EntryProvider extends ChangeNotifier {
     // Save the entry to Firestore
     try {
       final docRef =
-      await FirebaseFirestore.instance.collection('entries').add(entry.toJson());
+      await FirebaseFirestore.instance.collection('users').doc(userId)
+      .collection('entries').add(entry.toJson());
 
       //Update the entry so it has the correct id
       final newEntry = Entry(
@@ -32,7 +36,7 @@ class EntryProvider extends ChangeNotifier {
   Future<void> deleteEntry(Entry entry) async {
     try {
       // Delete from Firestore
-      await FirebaseFirestore.instance
+      await FirebaseFirestore.instance.collection('users').doc(userId)
           .collection('entries')
           .doc(entry.documentId)
           .delete();
@@ -49,7 +53,8 @@ class EntryProvider extends ChangeNotifier {
   Future<void> editEntry(Entry oldEntry, Entry newEntry) async {
     try {
       // Update in Firestore
-      await FirebaseFirestore.instance.collection('entries').doc(oldEntry.documentId).update(newEntry.toJson());
+      await FirebaseFirestore.instance.collection('users').doc(userId)
+      .collection('entries').doc(oldEntry.documentId).update(newEntry.toJson());
 
       // Update in the local list
       final index = _entries.indexOf(oldEntry);
@@ -64,7 +69,8 @@ class EntryProvider extends ChangeNotifier {
   }
 
   Future<void> loadEntries() async {
-    final entriesData = await FirebaseFirestore.instance.collection('entries').get();
+    final entriesData = await FirebaseFirestore.instance.collection('users').doc(userId)
+    .collection('entries').get();
 
     _entries.clear();
 

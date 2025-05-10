@@ -25,9 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         if (user.emailVerified) {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => MainPage(), // Navigate to login screen
+              builder: (context) => MainPage(),
             ),
           );
         } else {

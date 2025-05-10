@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lab_manager/page/calculator_page.dart';
 import 'package:lab_manager/page/timer_page.dart';
-//import 'package:lab_manager/page/main_converter_page.dart';
 import 'package:lab_manager/page/converter_page.dart';
 import 'package:lab_manager/objects/squareButton.dart';
 

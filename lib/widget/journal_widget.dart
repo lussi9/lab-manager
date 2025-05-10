@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -124,8 +124,7 @@ class JournalWidgetState extends State<JournalWidget> {
     ),
     onDismissed: (direction) async{
       try{
-        await FirebaseFirestore.instance.collection("entries").doc(entry
-          .documentId).delete();
+        Provider.of<EntryProvider>(context, listen: false).deleteEntry(entry);
       } catch (e) {
         print('Error deleting entry: $e');
       } finally{
