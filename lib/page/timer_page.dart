@@ -71,7 +71,9 @@ class _TimerPageState extends State<TimerPage> {
                         ),
                         IconButton(
                           icon: Icon(Icons.replay),
-                          onPressed: () => provider.resetTimer(index),
+                          onPressed: () {
+                            provider.resetTimer(index);
+                          },
                         ),
                       ],
                     ),

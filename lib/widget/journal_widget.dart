@@ -14,25 +14,71 @@ class JournalWidget extends StatefulWidget {
 }
 
 class JournalWidgetState extends State<JournalWidget> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Entry> _filteredEntries = [];
+
   @override
   void initState() {
     super.initState();
-    Provider.of<EntryProvider>(context, listen: false).loadEntries();
+    final entryProvider = Provider.of<EntryProvider>(context, listen: false);
+    entryProvider.loadEntries();
+    _filteredEntries = entryProvider.entries;
+  }
+
+  void _filterEntries(String query) {
+    final entryProvider = Provider.of<EntryProvider>(context, listen: false);
+    setState(() {
+      if (query.isEmpty) {
+        _filteredEntries = entryProvider.entries; // Show all entries if query is empty
+      } else {
+        _filteredEntries = entryProvider.entries
+            .where((entry) =>
+                entry.title.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final entryProvider = Provider.of<EntryProvider>(context);
-    return Scaffold(
-      body: entryProvider.entries.isEmpty
-          ? Center(child: Text("No entries found"))
-          : ListView.builder(
-        itemCount: entryProvider.entries.length,
-        itemBuilder: (context, index) {
-          final entry = entryProvider.entries[index];
-          return buildEntry(entry, index);
-        },
-      ),
+    return Column(
+      children: [
+        // Search bar
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: _searchController,
+            onChanged: _filterEntries, // Call _filterEntries on text change
+            cursorColor: Colors.green[800],
+            decoration: InputDecoration(
+              hintText: 'Search entries by title...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: Colors.green[800]!, // Set the border color to green when focused
+                  width: 2.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Entry list
+        Expanded(
+          child: _filteredEntries.isEmpty
+              ? const Center(child: Text("No entries found"))
+              : ListView.builder(
+                  itemCount: _filteredEntries.length,
+                  itemBuilder: (context, index) {
+                    final entry = _filteredEntries[index];
+                    return buildEntry(entry, index);
+                  },
+                ),
+        ),
+      ],
     );
   }
 

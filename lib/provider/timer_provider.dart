@@ -14,15 +14,23 @@ class TimerProvider extends ChangeNotifier {
   void stopTimer(int index) {
     if (index >= 0 && index < timers.length) {
       timers[index].isRunning = false;
+      _ticker?.cancel();
+      _ticker = null; // Clear the reference
       notifyListeners();
     }
   }
 
   void startTimer(int index) {
     final timer = timers[index];
+
+    // Ensure the timer is not already running
+    if (timer.isRunning) return;
+
+    // Calculate endTime based on the remaining time
     timer.endTime = DateTime.now().add(timer.remaining);
     timer.isRunning = true;
 
+    // Cancel any existing ticker
     _ticker?.cancel();
     _ticker = Timer.periodic(Duration(seconds: 1), (_) {
       final now = DateTime.now();
@@ -32,7 +40,8 @@ class TimerProvider extends ChangeNotifier {
         timer.remaining = Duration.zero;
         timer.isRunning = false;
         _ticker?.cancel();
-        // Optionally trigger a sound or alert here
+        _ticker = null; // Clear the reference
+        _playAlarm(); // Play alarm when the timer finishes
       } else {
         timer.remaining = newRemaining;
       }
@@ -41,9 +50,9 @@ class TimerProvider extends ChangeNotifier {
     });
   }
 
-
   void resetTimer(int index) {
     if (index >= 0 && index < timers.length) {
+      stopTimer(index);
       timers[index].reset();
       notifyListeners();
     }

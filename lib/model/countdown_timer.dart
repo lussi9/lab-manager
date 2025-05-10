@@ -12,6 +12,6 @@ class CountdownTimer {
 
   void reset() {
     remaining = duration;
-    isRunning = false;
+    endTime =  DateTime.now().add(duration);
   }
 }

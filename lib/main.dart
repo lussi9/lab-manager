@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lab_manager/objects/notification.dart';
 import 'package:lab_manager/page/entry_editing_page.dart';
@@ -13,6 +14,9 @@ import 'widget/journal_widget.dart';
 import 'widget/inventory_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:lab_manager/page/account_page.dart';
+import 'package:lab_manager/login/login_screen.dart';
+import 'package:lab_manager/register/register_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +56,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: title,
@@ -59,7 +65,7 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData.dark().copyWith(
           primaryColor: Colors.green,
         ),
-        home: MainPage(),
+        home: user != null? MainPage() : AuthUserPage(),
     );
   }
 }
@@ -97,6 +103,18 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     appBar: AppBar(
       title: Text(MyApp.title),
       centerTitle: true,
+      actions: [
+      IconButton(
+        icon: Icon(Icons.person), // User icon
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AccountPage(), // Navigate to AccountPage
+            ),
+          );
+        },
+      ),
+    ],
     ),
     body: TabBarView(
       controller: _tabController,
@@ -150,4 +168,57 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     }
   }
 
+}
+
+
+class AuthUserPage extends StatefulWidget {
+  const AuthUserPage({super.key});
+
+  @override
+  State<AuthUserPage> createState() => _AuthUserPageState();
+}
+
+class _AuthUserPageState extends State<AuthUserPage> {
+  @override
+  Widget build(BuildContext context) { 
+    return Scaffold(
+      body: Center(
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed:  () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(), // Navigate to login screen
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[800],
+              minimumSize: const Size(180, 60),
+            ),
+            child: const Text('Sign in', style: TextStyle(fontSize: 22, color: Colors.white),),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RegisterScreen(), // Navigate to login screen
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[800],
+              minimumSize: const Size(180, 60),
+            ),
+            child: const Text('Register', style: TextStyle(fontSize: 22, color: Colors.white)),
+          ),
+        ],
+      ),
+      ),
+    );
+  }
 }
