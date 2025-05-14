@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lab_manager/main.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -18,7 +19,7 @@ class _AccountPageState extends State<AccountPage> {
       appBar: AppBar(
         title: const Text('My Account'),
         centerTitle: true,
-        backgroundColor: Colors.green[800],
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Center(
         child: Column(
@@ -29,13 +30,24 @@ class _AccountPageState extends State<AccountPage> {
               style: const TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 20),
-            /*ElevatedButton(
+            ElevatedButton(
               onPressed: () async {
-                await _authService.logout();
-                setState(() {}); // Refresh the page after logout
+                await _auth.signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const AuthUserPage(),
+                  ),
+                );
               },
-              child: const Text('Logout'),
-            ),*/
+              style: ElevatedButton.styleFrom(
+                minimumSize:
+                    const Size(160, 55),
+                backgroundColor: Colors.red, 
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout',
+                style: TextStyle(fontSize: 18),),
+            ),
           ],
         ),
       ),

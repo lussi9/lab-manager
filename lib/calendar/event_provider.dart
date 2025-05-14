@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lab_manager/model/event.dart';
+import 'package:lab_manager/calendar/event.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -7,22 +7,20 @@ final userId = FirebaseAuth.instance.currentUser?.uid;
 
 class EventProvider extends ChangeNotifier {
   final List<Event> _events = [];
-
   List<Event> get events => _events;
-
   DateTime _selectedDate = DateTime.now();
-
   DateTime get selectedDate => _selectedDate;
 
   void setDate(DateTime date) => _selectedDate = date;
-
   List<Event> get eventsOfSelectedDate => _events;
+
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> addEvent(Event event) async {
     // Save the event to Firestore
     try {
       final docRef = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(userId)
           .collection('events')
           .add(event.toJson());
@@ -50,7 +48,7 @@ class EventProvider extends ChangeNotifier {
     try {
       // Delete from Firestore
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(userId)
           .collection('events')
           .doc(event.documentId)
@@ -73,7 +71,7 @@ class EventProvider extends ChangeNotifier {
 
       // Update in Firestore
       await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(userId)
           .collection('events')
           .doc(oldEvent.documentId)
@@ -94,7 +92,7 @@ class EventProvider extends ChangeNotifier {
 
   Future<void> loadEvents() async {
     final eventsData =
-    await FirebaseFirestore.instance.collection('users').doc(userId).collection('events').get();
+    await FirebaseFirestore.instance.collection('Users').doc(userId).collection('events').get();
 
     _events.clear();
 

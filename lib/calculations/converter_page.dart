@@ -65,7 +65,7 @@ class _ConverterViewState extends State<ConverterView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Converter'),
-        backgroundColor: Colors.green[800],
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -128,12 +128,12 @@ class _ConverterViewState extends State<ConverterView> {
             // Input field for the value to convert
             TextField(
               keyboardType: TextInputType.number,
-              cursorColor: Colors.green[800],
+              cursorColor: Color.fromRGBO(67, 160, 71, 1),
               decoration: InputDecoration(
                 labelText: 'Enter value' ,
                 labelStyle: TextStyle(color: Colors.grey),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green[800]!),
+                  borderSide: BorderSide(color: Color.fromRGBO(67, 160, 71, 1)),
                 ),
                 errorText: isInputValid ? null : 'Invalid input', // Show error message
               ),

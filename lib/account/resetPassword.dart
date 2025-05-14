@@ -67,7 +67,7 @@ class ResetPasswordRequestScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        backgroundColor:  Colors.green[800],
+        backgroundColor:  Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Stack(
         children: [
@@ -93,7 +93,7 @@ class ResetPasswordRequestScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => _sendPasswordResetEmail(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[800],
+                    backgroundColor: Color.fromRGBO(67, 160, 71, 1),
                     minimumSize: const Size(
                         double.infinity, 50), // Botón ancho
                   ),

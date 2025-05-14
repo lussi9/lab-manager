@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lab_manager/model/fungible.dart';
-import 'package:lab_manager/model/folder.dart';
+import 'package:lab_manager/inventory/fungible.dart';
+import 'package:lab_manager/inventory/folder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-final userId = FirebaseAuth.instance.currentUser?.uid;
 
 class InventoryProvider extends ChangeNotifier {
   final Map<String, List<Fungible>> folderFungibles = {};
@@ -16,6 +14,8 @@ class InventoryProvider extends ChangeNotifier {
     return folderFungibles[folderId] ?? [];
   }
 
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
+
   void setQuantityLimit(int value) {
     quantityLimit = value;
     notifyListeners();
@@ -25,7 +25,7 @@ class InventoryProvider extends ChangeNotifier {
   Future<void> addFungible(String folderId, Fungible fungible) async {
     try {
       final docRef =
-      await FirebaseFirestore.instance.collection('users').doc(userId)
+      await FirebaseFirestore.instance.collection('Users').doc(userId)
       .collection('folders').doc(folderId).collection('fungibles').add(fungible.toJson());
 
       final newFungible = Fungible(
@@ -46,7 +46,7 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> deleteFungible(String folderId, Fungible fungible) async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
+      await FirebaseFirestore.instance.collection('Users').doc(userId)
         .collection('folders').doc(folderId)
         .collection('fungibles').doc(fungible.documentId).delete();
       
@@ -60,7 +60,7 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> updateFungible(String folderId, Fungible fungible) async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
+      await FirebaseFirestore.instance.collection('Users').doc(userId)
         .collection('folders').doc(folderId)
         .collection('fungibles').doc(fungible.documentId).update(fungible.toJson());
 
@@ -76,7 +76,7 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> loadFungibles(String folderId) async {
-    final fungiblesData = await FirebaseFirestore.instance.collection('users').doc(userId)
+    final fungiblesData = await FirebaseFirestore.instance.collection('Users').doc(userId)
       .collection('folders').doc(folderId)
       .collection('fungibles').get();
 
@@ -104,7 +104,7 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> addFolder(Folder folder) async {
     try {
-      final docRef = await FirebaseFirestore.instance.collection('users').doc(userId)
+      final docRef = await FirebaseFirestore.instance.collection('Users').doc(userId)
       .collection('folders').add(folder.toJson());
       final newFolder = Folder(
         documentId: docRef.id,
@@ -120,7 +120,7 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> deleteFolder(Folder folder) async {
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
+      await FirebaseFirestore.instance.collection('Users').doc(userId)
       .collection('folders').doc(folder.documentId).delete();
 
       _folders.remove(folder);
@@ -132,7 +132,7 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> loadFolders() async {
-    final foldersData = await FirebaseFirestore.instance.collection('users').doc(userId)
+    final foldersData = await FirebaseFirestore.instance.collection('Users').doc(userId)
     .collection('folders').get();
     _folders.clear();
     folderFungibles.clear();
@@ -148,7 +148,7 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> loadAll() async {
     try {
-      final foldersData = await FirebaseFirestore.instance.collection('users').doc(userId)
+      final foldersData = await FirebaseFirestore.instance.collection('Users').doc(userId)
       .collection('folders').get();
 
       _folders.clear();
@@ -159,7 +159,7 @@ class InventoryProvider extends ChangeNotifier {
         _folders.add(folder);
 
         // Load fungibles for each folder
-        final fungiblesData = await FirebaseFirestore.instance.collection('users').doc(userId)
+        final fungiblesData = await FirebaseFirestore.instance.collection('Users').doc(userId)
             .collection('folders').doc(folder.documentId)
             .collection('fungibles').get();
 

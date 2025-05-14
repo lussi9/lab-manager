@@ -17,7 +17,7 @@ class Event {
     this.description = '',
     required this.from,
     required this.to,
-    this.background = Colors.green,
+    this.background = const Color.fromRGBO(67, 160, 71, 1),
     this.isAllDay = false,
     this.recurrenceRule = '',
   });

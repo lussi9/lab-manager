@@ -26,38 +26,38 @@ class CalculatorPageState extends State<CalculatorPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculator'),
-        backgroundColor: Colors.green[800],
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Column(
        children: [
         Expanded(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 70),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  userInput,
+                  userInput, style: const TextStyle(fontSize: 25, color: Colors.grey),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.only(left: 15, right: 15),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  result.toString(),
+                  result.toString(), style: const TextStyle(fontSize: 40)
                 ),
               )
             ],
           )
         ),
         Expanded(
-          flex:2,
+          flex: 4,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: GridView.builder(
               itemCount: buttons.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4), itemBuilder: (BuildContext context, int index){
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1.075), 
+              itemBuilder: (BuildContext context, int index){
               if(index == 0){ // C
                 return MyButton(
                   buttonText: buttons[index],
@@ -77,7 +77,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                 );
               } 
 
-              else if(index == 1){ // +/-
+              else if(index == 1){ // sqrt
                 return MyButton(
                   buttonText: buttons[index],
                   color: Colors.grey[600],
@@ -132,7 +132,7 @@ class CalculatorPageState extends State<CalculatorPage> {
               else if(index == 19) { // =
                 return MyButton(
                   buttonText: buttons[index],
-                  color: Colors.green[800],
+                  color: Color.fromRGBO(67, 160, 71, 1),
                   textColor: Colors.white,
                   buttonTapped: () {
                     setState(() {
@@ -150,7 +150,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                     });
                   },
                   buttonText: buttons[index],
-                  color: isOperator(buttons[index])? Colors.green[800] : Colors.grey[800],
+                  color: isOperator(buttons[index])? Color.fromRGBO(67, 160, 71, 1) : Colors.grey[800],
                   textColor: Colors.white,
                 );
               }

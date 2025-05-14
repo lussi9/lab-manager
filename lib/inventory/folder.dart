@@ -1,4 +1,4 @@
-import 'package:lab_manager/model/fungible.dart';
+import 'package:lab_manager/inventory/fungible.dart';
 
 class Folder {
   String? documentId;

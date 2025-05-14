@@ -1,4 +1,4 @@
-import 'package:lab_manager/login/resetPassword.dart';
+import 'package:lab_manager/account/resetPassword.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lab_manager/main.dart';
@@ -13,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   Future<void> _loginUser() async {
     try {
@@ -25,10 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         if (user.emailVerified) {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => MainPage(),
             ),
+            (route) => false,
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -55,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Colors.green[800],
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () { 
@@ -80,9 +82,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                        });
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -91,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     minimumSize:
                         const Size(double.infinity, 50),
-                    backgroundColor: Colors.green[800], 
+                    backgroundColor: Color.fromRGBO(67, 160, 71, 1), 
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(

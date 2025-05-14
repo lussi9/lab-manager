@@ -23,6 +23,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
 
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -47,13 +50,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         User? user = userCredential.user;
 
         if (user != null) {
-          // Guardar datos del usuario en Firestore
-          /*await _firestore.collection('App users').doc(user.uid).set({
+          await _firestore.collection('Users').doc(user.uid).set({
             'nombre': _nameController.text.trim(),
             'apellidos': _surnameController.text.trim(),
             'email': _emailController.text.trim(),
             'nombreUsuario': _usernameController.text.trim(),
-          });*/
+          });
 
           // Enviar verificación de correo
           await user.sendEmailVerification();
@@ -87,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Colors.green[800],
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () { 
@@ -176,11 +178,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 10),
                           TextFormField(
                             controller: _passwordController,
-                            decoration: const InputDecoration(
+                            obscureText: !_isPasswordVisible,
+                            decoration: InputDecoration(
                               labelText: 'Password',
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isPasswordVisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+                                  });
+                                },
+                              ),
                             ),
-                            obscureText: true,
                             validator: (value) => value!.isEmpty
                                 ? 'Introduce a password'
                                 : null,
@@ -188,11 +202,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 10),
                           TextFormField(
                             controller: _confirmPasswordController,
-                            decoration: const InputDecoration(
-                              labelText: 'Repeat your password',
-                              border: OutlineInputBorder(),
+                            obscureText: !_isConfirmPasswordVisible,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              border: const OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isConfirmPasswordVisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible; // Toggle visibility
+                                  });
+                                },
+                              ),
                             ),
-                            obscureText: true,
                             validator: (value) {
                               if (value!.isEmpty) return 'Repeat your password';
                               if (value != _passwordController.text) {
@@ -205,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ElevatedButton(
                             onPressed: _registerUser,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green[800],
+                              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
                               minimumSize: const Size(
                                   double.infinity, 50), // Botón ancho
                             ),

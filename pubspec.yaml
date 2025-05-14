@@ -43,8 +43,6 @@ dependencies:
   #state management
   provider: ^6.1.4
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.2
   path_provider: ^2.0.14
@@ -61,6 +59,18 @@ dependencies:
   flutter_local_notifications: ^19.1.0
 
   timezone: ^0.10.0
+
+  audioplayers: ^6.4.0
+
+  flutter_slidable: ^4.0.0
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+
+  background_color: "#d8f8d2"
+  image: "assets/background_img.png"
 
 dev_dependencies:
   flutter_test:
@@ -88,7 +98,8 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-
+  assets:
+    - assets/alarm.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

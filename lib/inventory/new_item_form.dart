@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lab_manager/model/folder.dart';
-import 'package:lab_manager/model/fungible.dart';
-import 'package:lab_manager/provider/inventory_provider.dart';
+import 'package:lab_manager/inventory/folder.dart';
+import 'package:lab_manager/inventory/fungible.dart';
+import 'package:lab_manager/inventory/inventory_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddNewItemForm extends StatefulWidget {
@@ -85,7 +85,7 @@ class _AddNewItemFormState extends State<AddNewItemForm> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[800],
+              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
             ),
             child: Text('Save', style: TextStyle(color: Colors.white)),
           ),

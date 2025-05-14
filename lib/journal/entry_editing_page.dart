@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:lab_manager/model/entry.dart';
+import 'package:lab_manager/journal/entry.dart';
 import 'package:provider/provider.dart';
-import 'package:lab_manager/provider/entry_provider.dart';
+import 'package:lab_manager/journal/entry_provider.dart';
 
 class EntryEditingPage extends StatefulWidget {
   final Entry? entry; // Optional existing entry
@@ -43,7 +43,7 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
     appBar: AppBar(
       leading: const CloseButton(),
       actions: buildEditingActions(),
-      backgroundColor: Colors.green[800],
+      backgroundColor: Color.fromRGBO(67, 160, 71, 1),
     ),
     body: Container(
       padding: const EdgeInsets.all(12),
@@ -56,7 +56,7 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
               contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
               title: TextFormField(
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                cursorColor: Colors.green[800],
+                cursorColor: Color.fromRGBO(67, 160, 71, 1),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Add Title',
@@ -177,22 +177,18 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
         description: descriptionController.text,
       );
       // Save to Firestore
-      try {
-        if (widget.entry == null) {
-          entryProvider.addEntry(entry);
-        } else {
-          final entryUpdate = Entry(
-            documentId: widget.entry!.documentId,
-            title: titleController.text,
-            date: fromDate,
-            description: descriptionController.text,
-          );
-          entryProvider.editEntry(widget.entry!, entryUpdate);
-        }
-        Navigator.of(context).pop();
-      } catch (e) {
-        print("Error saving entry: $e");
+      if (widget.entry == null) {
+        entryProvider.addEntry(entry);
+      } else {
+        final entryUpdate = Entry(
+          documentId: widget.entry!.documentId,
+          title: titleController.text,
+          date: fromDate,
+          description: descriptionController.text,
+        );
+        entryProvider.editEntry(widget.entry!, entryUpdate);
       }
+      Navigator.of(context).pop();
     }
   }
 }

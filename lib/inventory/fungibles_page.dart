@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lab_manager/model/folder.dart';
-import 'package:lab_manager/model/fungible.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:lab_manager/inventory/folder.dart';
+import 'package:lab_manager/inventory/fungible.dart';
 import 'package:provider/provider.dart';
-import 'package:lab_manager/provider/inventory_provider.dart';
-import 'package:lab_manager/page/new_item_form.dart';
+import 'package:lab_manager/inventory/inventory_provider.dart';
+import 'package:lab_manager/inventory/new_item_form.dart';
 
 class FungiblesPage extends StatefulWidget {
   final Folder folder;
@@ -132,7 +133,20 @@ class FungiblesPageState extends State<FungiblesPage> {
           child: ListView.separated(
             itemCount: fungibleList.length,
             itemBuilder: (context, index) {
-              return buildFungible(fungibleList[index], index);
+              return Slidable( startActionPane: ActionPane(
+                motion: const DrawerMotion(),
+                children: [
+                  SlidableAction(
+                    backgroundColor: Colors.red,
+                    icon: Icons.delete,
+                    label: 'Delete',
+                    onPressed: (context) {
+                      Provider.of<InventoryProvider>(context, listen: false).deleteFungible(widget.folder.documentId!, fungibleList[index]);
+                    },
+                  ),
+                ],),
+                child: buildFungible(fungibleList[index], index),
+              );
             },
             separatorBuilder: (context, index) => Divider(
               color: Colors.grey[700],
@@ -164,7 +178,7 @@ class FungiblesPageState extends State<FungiblesPage> {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[800],
+            backgroundColor: Color.fromRGBO(67, 160, 71, 1),
             padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -182,21 +196,7 @@ class FungiblesPageState extends State<FungiblesPage> {
   Widget buildFungible(Fungible fungible, int index) { 
   final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
 
-  return Dismissible(
-    key: Key(fungible.documentId!),
-    background: Container(
-      color: Colors.red,
-      alignment: Alignment.centerLeft,
-      padding: EdgeInsets.only(left: 16.0),
-      child: Icon(Icons.delete, color: Colors.white),
-    ),
-    secondaryBackground: Container(
-      color: Colors.red,
-      alignment: Alignment.centerRight,
-      padding: EdgeInsets.only(right: 16.0),
-      child: Icon(Icons.delete, color: Colors.white),
-    ),
-    child: ListTile(
+  return ListTile(
       title: Text(fungible.name, 
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
       subtitle: Text(fungible.description),
@@ -221,7 +221,7 @@ class FungiblesPageState extends State<FungiblesPage> {
             fungible.quantity.toString(),
             style: TextStyle(
               fontSize: 20,
-              color: fungible.quantity >= inventoryProvider.quantityLimit ? Colors.green : Colors.red,
+              color: fungible.quantity >= inventoryProvider.quantityLimit ? Color.fromRGBO(67, 160, 71, 1) : Colors.red,
             ),
           ),
           SizedBox(width: 8),
@@ -237,14 +237,6 @@ class FungiblesPageState extends State<FungiblesPage> {
           ),
         ],
       ),
-    ),
-    onDismissed: (direction) async{
-      try{
-        Provider.of<InventoryProvider>(context, listen: false).deleteFungible(widget.folder.documentId!, fungible);
-      } catch (e) {
-        print('Error deleting entry: $e');
-      }
-    },
-  );
+    );
   }
 }

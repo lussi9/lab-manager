@@ -1,9 +1,9 @@
 import 'package:lab_manager/objects/notification.dart';
-import '../model/event.dart';
+import 'event.dart';
 import 'package:flutter/material.dart';
 import 'package:lab_manager/utils.dart';
 import 'package:provider/provider.dart';
-import '../provider/event_provider.dart';
+import 'event_provider.dart';
 
 class EventEditingPage extends StatefulWidget{
   final Event? selectedEvent;
@@ -29,7 +29,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
   final List<Color> _colorCollection = [
     Colors.red,
     Colors.blue,
-    Colors.green,
+    Color.fromRGBO(67, 160, 71, 1),
     Colors.yellow,
     Colors.orange,
   ];
@@ -47,6 +47,8 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   void initState(){
     super.initState();
+    final calendarProvider = Provider.of<EventProvider>(context, listen: false);
+    calendarProvider.loadEvents();
     if(widget.selectedEvent == null){
       fromDate = DateTime.now();
       toDate = DateTime.now().add(Duration(hours: 2));
@@ -70,7 +72,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      backgroundColor: Colors.green[800],
+      backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       title: Text('Event details'),
       leading: CloseButton(),
       actions: buildEditingActions(),
@@ -87,7 +89,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
               leading: const Text(''),
               title: TextFormField(
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                cursorColor: Colors.green[800],
+                cursorColor: Color.fromRGBO(67, 160, 71, 1),
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Add Title',

@@ -15,19 +15,22 @@ class MyButton extends StatelessWidget {
       onTap: buttonTapped,
       onLongPress: longPress,
       child: Padding(
-        padding: EdgeInsets.all(8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            alignment: Alignment.center,
-            color: color,
-            child: Text(
-                buttonText,
-                style: TextStyle(color: textColor, fontWeight: FontWeight.bold)
-            ),
+        padding: EdgeInsets.all(6),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          buttonText,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 25,
           ),
         ),
-    )
+      ),
+      ),
     );
   }
 }

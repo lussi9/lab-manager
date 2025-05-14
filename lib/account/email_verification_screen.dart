@@ -27,7 +27,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   // Método para guardar el usuario en Firestore
   Future<void> _saveUserData(User user) async {
-    await _firestore.collection('Usuarios creados').doc(user.uid).set({
+    await _firestore.collection('Users').doc(user.uid).set({
       'nombre': widget.nombre,
       'apellidos': widget.apellidos,
       'email': widget.email,
@@ -42,14 +42,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (user != null && user.emailVerified) {
       await _saveUserData(user);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuario registrado exitosamente.')),
+        const SnackBar(content: Text('User registered correctly.')),
       );
       Navigator.of(context)
           .popUntil((route) => route.isFirst); // Vuelve al inicio
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('El correo electrónico no ha sido verificado aún.'),
+          content: Text('The email address has not been verified yet.'),
         ),
       );
     }
@@ -59,7 +59,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verificación de correo'),
+        title: const Text('Email Verification'),
+        centerTitle: true,
+        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         automaticallyImplyLeading: false, // Oculta el botón de retroceso
       ),
       body: Center(
@@ -67,13 +69,21 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Se ha enviado un correo de verificación. Verifícalo y presiona el botón de abajo para continuar.',
+              'A verification email has been sent to your account. Please check your email and press the button below to continue.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _checkEmailVerification,
-              child: const Text('Verificar email y completar registro'),
+              style: ElevatedButton.styleFrom(
+                minimumSize:
+                  const Size(160, 50),
+                backgroundColor: Color.fromRGBO(67, 160, 71, 1), 
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Verify email and complete registration', 
+                style: TextStyle(fontSize: 16),
+              ), 
             ),
           ],
         ),

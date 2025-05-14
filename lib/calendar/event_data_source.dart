@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:lab_manager/model/event.dart';
+import 'package:lab_manager/calendar/event.dart';
 import 'package:flutter/material.dart';
 
 class EventDataSource extends CalendarDataSource{

@@ -1,10 +1,10 @@
-import 'package:lab_manager/model/event_data_source.dart';
+import 'package:lab_manager/calendar/event_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:provider/provider.dart';
-import '../provider/event_provider.dart';
-import 'package:lab_manager/page/event_editing_page.dart';
-import 'package:lab_manager/model/event.dart';
+import 'event_provider.dart';
+import 'package:lab_manager/calendar/event_editing_page.dart';
+import 'package:lab_manager/calendar/event.dart';
 
 class CalendarWidget extends StatefulWidget{
   const CalendarWidget({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class CalendarWidgetState extends State<CalendarWidget>{
     return SfCalendar(
       view: CalendarView.month,
       controller: calendarController,
-      todayHighlightColor: Colors.green[800],
+      todayHighlightColor: Color.fromRGBO(67, 160, 71, 1),
       todayTextStyle: TextStyle(
         color: Colors.white,
       ),

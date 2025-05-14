@@ -1,10 +1,19 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:lab_manager/model/countdown_timer.dart';
+import 'package:lab_manager/calculations/countdown_timer.dart';
 
 class TimerProvider extends ChangeNotifier {
   final List<CountdownTimer> timers = [];
-  Timer? _ticker;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  StreamSubscription<int>? _tickerSubscription;
+
+  @override
+  void dispose() {
+    _tickerSubscription?.cancel();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   void addTimer(String label, Duration duration) {
     timers.add(CountdownTimer(label: label, duration: duration));
@@ -14,8 +23,8 @@ class TimerProvider extends ChangeNotifier {
   void stopTimer(int index) {
     if (index >= 0 && index < timers.length) {
       timers[index].isRunning = false;
-      _ticker?.cancel();
-      _ticker = null; // Clear the reference
+      _tickerSubscription?.cancel();
+      _tickerSubscription = null; // Clear the reference
       notifyListeners();
     }
   }
@@ -31,16 +40,17 @@ class TimerProvider extends ChangeNotifier {
     timer.isRunning = true;
 
     // Cancel any existing ticker
-    _ticker?.cancel();
-    _ticker = Timer.periodic(Duration(seconds: 1), (_) {
+    _tickerSubscription?.cancel();
+    _tickerSubscription = Stream.periodic(const Duration(seconds: 1), (x) => x)
+        .listen((_) {
       final now = DateTime.now();
       final newRemaining = timer.endTime!.difference(now);
 
       if (newRemaining <= Duration.zero) {
         timer.remaining = Duration.zero;
         timer.isRunning = false;
-        _ticker?.cancel();
-        _ticker = null; // Clear the reference
+        _tickerSubscription?.cancel();
+        _tickerSubscription = null; // Clear the reference
         _playAlarm(); // Play alarm when the timer finishes
       } else {
         timer.remaining = newRemaining;
@@ -58,22 +68,11 @@ class TimerProvider extends ChangeNotifier {
     }
   }
 
-  void tick() {
-    for (var timer in timers) {
-      if (timer.isRunning && timer.remaining > Duration.zero) {
-        timer.remaining -= Duration(seconds: 1);
-        if (timer.remaining <= Duration.zero) {
-          timer.remaining = Duration.zero;
-          timer.isRunning = false;
-          _playAlarm(); // alarm when finished
-        }
-      }
+  void _playAlarm() async {
+    try {
+      await _audioPlayer.play(AssetSource('alarm.mp3')); // Play the alarm sound
+    } catch (e) {
+      print('Error playing alarm sound: $e');
     }
-    notifyListeners();
-  }
-
-  void _playAlarm() {
-    // You'll need to integrate an audio package like `audioplayers`
-    print("⏰ Timer done! Play alarm sound here");
   }
 }
