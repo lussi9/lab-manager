@@ -41,6 +41,14 @@ class _ConverterViewState extends State<ConverterView> {
       'Percent': 100.0,
       'ppm': 1000000.0,
     },
+    'Density': {
+      'g/cm³': 1.0,
+      'g/mL': 1.0,
+      'kg/m³': 1000.0,
+      'g/L': 1000.0,
+      'mg/mL': 1000000.0,
+      'mg/cm³': 1000000.0,
+    },
   };
 
   List<String> get units {

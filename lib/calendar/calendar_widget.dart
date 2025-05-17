@@ -13,17 +13,9 @@ class CalendarWidget extends StatefulWidget{
   State<CalendarWidget> createState() => CalendarWidgetState();
 }
 
-List<Color> _colorCollection = <Color>[];
-Event? _selectedEvent;
-String _title = '';
-String _description = '';
-late DateTime _fromDate;
-late DateTime _toDate;
-bool _isAllDay = false;
-int _selectedColorIndex = 0;
-
 class CalendarWidgetState extends State<CalendarWidget>{
   CalendarController calendarController = CalendarController();
+  Event? _selectedEvent;
 
   @override
   void initState() {
@@ -35,6 +27,7 @@ class CalendarWidgetState extends State<CalendarWidget>{
   @override
   Widget build(BuildContext context) {
     final events = Provider.of<EventProvider>(context).events;
+
     return SfCalendar(
       view: CalendarView.month,
       controller: calendarController,
@@ -63,52 +56,37 @@ class CalendarWidgetState extends State<CalendarWidget>{
         ],
       //viewNavigationMode: ViewNavigationMode.snap,
       monthViewSettings: MonthViewSettings(
-        numberOfWeeksInView: 5,
-        showAgenda: true,
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-      appointmentTextStyle: TextStyle(
-        fontSize: 12
-      ),
+      scheduleViewSettings: ScheduleViewSettings(
+        appointmentItemHeight: 50),
+      appointmentTextStyle: TextStyle(fontSize: 13),
       appointmentTimeTextFormat: 'HH:mm',
       onTap: calendarTapped,
+      onLongPress: (CalendarLongPressDetails details) {
+        if (details.targetElement == CalendarElement.calendarCell) {
+          setState(() {
+            Navigator.push<Widget>(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => EventEditingPage()),
+            );
+          });
+        }
+      },
     );
   }
 
   void calendarTapped(CalendarTapDetails details) {
-    if (details.targetElement != CalendarElement.calendarCell &&
-        details.targetElement != CalendarElement.appointment) {
-      return;
-    }
-    setState(() {
-      _selectedEvent = null;
-      _isAllDay = false;
-      _selectedColorIndex = 0;
-      _title = '';
-      _description = '';
-      if (calendarController.view == CalendarView.month) {
-        calendarController.view = CalendarView.day;
-      } else {
-        if (details.appointments != null &&
-            details.appointments!.length == 1) {
-          final Event eventDetails = details.appointments![0];
-          _fromDate = eventDetails.from;
-          _toDate = eventDetails.to;
-          _isAllDay = eventDetails.isAllDay;
-          _selectedColorIndex = _colorCollection.indexOf(eventDetails.background);
-          _title = eventDetails.title;
-          _description = eventDetails.description;
-          _selectedEvent = eventDetails;
-        } else {
-          final DateTime date = details.date!;
-          _fromDate = date;
-          _toDate = date.add(const Duration(hours: 1));
-        }
+    if (details.targetElement == CalendarElement.appointment) {
+      setState(() {
+        final Event eventDetails = details.appointments![0];
+        _selectedEvent = eventDetails;
         Navigator.push<Widget>(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => EventEditingPage(selectedEvent: _selectedEvent)),
         );
-      }
-    });
+      });
+    }
   }
 }

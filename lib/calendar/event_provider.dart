@@ -17,7 +17,6 @@ class EventProvider extends ChangeNotifier {
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> addEvent(Event event) async {
-    // Save the event to Firestore
     try {
       final docRef = await FirebaseFirestore.instance
           .collection('Users')
@@ -85,7 +84,6 @@ class EventProvider extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      // Handle any error
       print('Error editing event: $e');
     }
   }
@@ -93,7 +91,6 @@ class EventProvider extends ChangeNotifier {
   Future<void> loadEvents() async {
     final eventsData =
     await FirebaseFirestore.instance.collection('Users').doc(userId).collection('events').get();
-
     _events.clear();
 
     for (var doc in eventsData.docs) {

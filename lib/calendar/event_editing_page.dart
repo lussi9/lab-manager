@@ -195,6 +195,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
                   color: _colorCollection[_selectedColorIndex]),
               title: Text(
                 _colorNames[_selectedColorIndex],
+                style: TextStyle(fontSize: 18),
               ),
               onTap: () {
                 showDialog<Widget>(
@@ -241,6 +242,9 @@ class _EventEditingPageState extends State<EventEditingPage>{
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Add a description',
+                  hintStyle: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
                 controller: descController,
                 onFieldSubmitted: (_) => saveForm(),
@@ -329,6 +333,13 @@ class _EventEditingPageState extends State<EventEditingPage>{
       pickDate: pickDate,
       firstDate: pickDate? fromDate : null,);
     if(date == null) return;
+
+    if (date.isBefore(fromDate)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('The end date cannot be prior to the start date.')),
+    );
+    return;
+  }
 
     setState(() => toDate = date);
   }

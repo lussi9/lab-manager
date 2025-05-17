@@ -1,78 +1,60 @@
+import 'package:flutter/material.dart';
+import 'package:lab_manager/objects/notification.dart';
+import 'countdown_timer.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:lab_manager/calculations/countdown_timer.dart';
 
 class TimerProvider extends ChangeNotifier {
-  final List<CountdownTimer> timers = [];
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  StreamSubscription<int>? _tickerSubscription;
+  final List<CountdownTimer> _timers = [];
+  final AudioPlayer _player = AudioPlayer();
 
-  @override
-  void dispose() {
-    _tickerSubscription?.cancel();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
+  List<CountdownTimer> get timers => _timers;
 
-  void addTimer(String label, Duration duration) {
-    timers.add(CountdownTimer(label: label, duration: duration));
+  void addTimer(Duration duration, String label) {
+    _timers.add(CountdownTimer(label: label, duration: duration));
     notifyListeners();
   }
 
-  void stopTimer(int index) {
-    if (index >= 0 && index < timers.length) {
-      timers[index].isRunning = false;
-      _tickerSubscription?.cancel();
-      _tickerSubscription = null; // Clear the reference
-      notifyListeners();
-    }
+  void removeTimer(CountdownTimer timer) {
+    timer.timer?.cancel();
+    _timers.remove(timer);
+    notifyListeners();
   }
 
-  void startTimer(int index) {
-    final timer = timers[index];
-
-    // Ensure the timer is not already running
-    if (timer.isRunning) return;
-
-    // Calculate endTime based on the remaining time
-    timer.endTime = DateTime.now().add(timer.remaining);
-    timer.isRunning = true;
-
-    // Cancel any existing ticker
-    _tickerSubscription?.cancel();
-    _tickerSubscription = Stream.periodic(const Duration(seconds: 1), (x) => x)
-        .listen((_) {
-      final now = DateTime.now();
-      final newRemaining = timer.endTime!.difference(now);
-
-      if (newRemaining <= Duration.zero) {
-        timer.remaining = Duration.zero;
-        timer.isRunning = false;
-        _tickerSubscription?.cancel();
-        _tickerSubscription = null; // Clear the reference
-        _playAlarm(); // Play alarm when the timer finishes
-      } else {
-        timer.remaining = newRemaining;
-      }
-
-      notifyListeners();
-    });
+  void startPauseTimer(CountdownTimer timerModel) {
+    if (timerModel.isRunning) {
+      timerModel.timer?.cancel();
+      timerModel.isRunning = false;
+    } else {
+      timerModel.isRunning = true;
+      timerModel.timer = Timer.periodic(Duration(seconds: 1), (_) {
+        if (timerModel.remaining.inSeconds > 0) {
+          timerModel.remaining -= Duration(seconds: 1);
+        } else {
+          timerModel.timer?.cancel();
+          timerModel.isRunning = false;
+          _player.play(AssetSource('alarm.mp3'));
+          NotificationService().showNotification(
+            id: 0,
+            title: 'Timer Finished',
+            body: 'Your timer ${timerModel.label} has finished.',
+          );
+        }
+        notifyListeners();
+      });
+    }
+    notifyListeners();
   }
 
-  void resetTimer(int index) {
-    if (index >= 0 && index < timers.length) {
-      stopTimer(index);
-      timers[index].reset();
-      notifyListeners();
-    }
+  void resetTimer(CountdownTimer timerModel) {
+    timerModel.timer?.cancel();
+    timerModel.remaining = timerModel.duration;
+    timerModel.isRunning = false;
+    notifyListeners();
   }
 
-  void _playAlarm() async {
-    try {
-      await _audioPlayer.play(AssetSource('alarm.mp3')); // Play the alarm sound
-    } catch (e) {
-      print('Error playing alarm sound: $e');
-    }
+  String format(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return "${two(d.inHours)}:${two(d.inMinutes.remainder(60))}:${two(d.inSeconds.remainder(60))}";
   }
 }
