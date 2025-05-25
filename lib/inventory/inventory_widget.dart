@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:lab_manager/inventory/folder.dart';
 import 'package:provider/provider.dart';
 import 'package:lab_manager/inventory/inventory_provider.dart';
-import 'package:lab_manager/inventory/new_item_form.dart';
 import 'package:lab_manager/inventory/fungibles_page.dart';
 
 class InventoryWidget extends StatefulWidget {
@@ -51,6 +50,19 @@ class InventoryWidgetState extends State<InventoryWidget> {
                         },
                       ),
                     ],),
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                    children: [
+                      SlidableAction(
+                        backgroundColor: Colors.blue,
+                        icon: Icons.edit,
+                        label: 'Edit',
+                        onPressed: (context) {
+                          _showAddFolderDialog(context, folder: folder);
+                        },
+                      ),
+                    ],
+                  ),
                   child: _buildFolderTile(folder),
                 );
               },
@@ -60,19 +72,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
           padding: EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                builder: (context) => Padding(
-                  padding: EdgeInsets.only(top: 16, left: 16,right: 16,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                  ),
-                  child: AddNewItemForm(folderId: ""),
-                ),
-              );
+              _showAddFolderDialog(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromRGBO(67, 160, 71, 1),
@@ -91,18 +91,78 @@ class InventoryWidgetState extends State<InventoryWidget> {
     );
   }
 
-  Widget _buildFolderTile(Folder folder)=>ListTile(
-    title: Text(
-      folder.name,
-      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+  Widget _buildFolderTile(Folder folder) => Card(
+    child: ListTile(
+      leading: const Icon(Icons.folder, size: 40),
+      title: Text(
+        folder.name,
+        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FungiblesPage(folder: folder),
+          ),
+        );
+      },
     ),
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FungiblesPage(folder: folder),
-        ),
-      );
-    },
   );
+
+  void _showAddFolderDialog(BuildContext context, {Folder? folder}) {
+    final _formKey = GlobalKey<FormState>();
+    String folderName = folder?.name ?? '';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(folder == null ? 'Add New Folder' : 'Edit Folder'),
+        content: Form(
+          key: _formKey,
+          child: TextFormField(
+            initialValue: folderName,
+            autofocus: true,
+            cursorColor: const Color.fromARGB(255, 204, 202, 202),
+            decoration: const InputDecoration(
+              labelText: 'Folder name',
+              labelStyle: TextStyle(color: Colors.grey),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter a folder name';
+              }
+              return null;
+            },
+            onChanged: (value) => folderName = value,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
+            ),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                final provider = Provider.of<InventoryProvider>(context, listen: false);
+                if (folder == null) {
+                  provider.addFolder(Folder(name: folderName));
+                } else {
+                  provider.updateFolder(folder, folderName); // You need to implement this method
+                }
+                Navigator.pop(context);
+              }
+            },
+            child: Text(folder == null ? 'Save' : 'Update', style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
 }

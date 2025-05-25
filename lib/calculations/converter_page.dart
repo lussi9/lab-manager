@@ -141,7 +141,7 @@ class _ConverterViewState extends State<ConverterView> {
                 labelText: 'Enter value' ,
                 labelStyle: TextStyle(color: Colors.grey),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color.fromRGBO(67, 160, 71, 1)),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 errorText: isInputValid ? null : 'Invalid input', // Show error message
               ),

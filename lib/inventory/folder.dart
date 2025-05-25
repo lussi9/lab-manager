@@ -2,7 +2,7 @@ import 'package:lab_manager/inventory/fungible.dart';
 
 class Folder {
   String? documentId;
-  final String name;
+  String name;
   List<Fungible>? fungibles = [];
 
   Folder({

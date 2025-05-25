@@ -9,7 +9,7 @@ class Event {
   final DateTime to;
   final Color background;
   final bool isAllDay;
-  String? recurrenceRule;
+  final bool notification;
 
   Event({
     this.documentId,
@@ -19,7 +19,7 @@ class Event {
     required this.to,
     this.background = const Color.fromRGBO(67, 160, 71, 1),
     this.isAllDay = false,
-    this.recurrenceRule = '',
+    this.notification = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,7 +29,7 @@ class Event {
     'to': to,
     'background': background.toARGB32(),
     'isAllDay': isAllDay,
-    'recurrenceRule': recurrenceRule,
+    'notification': false,
   };
 
   static Event fromJson(Map<String, dynamic> json, String id) => Event(
@@ -39,7 +39,7 @@ class Event {
     from: (json['from'] as Timestamp).toDate(),
     to: (json['to'] as Timestamp).toDate(),
     background: Color(json['background']), // Handle null case
-    isAllDay: json['isAllDay'] ?? false, // Handle null case
-    recurrenceRule: json['recurrenceRule'], // Handle null case
+    isAllDay: json['isAllDay'], // Handle null case
+    notification: json['isAllDay'], // Handle null case
   );
 }

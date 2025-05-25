@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:lab_manager/calculations/timer_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class TimerPage extends StatefulWidget {
   @override
@@ -11,39 +13,6 @@ class TimerPage extends StatefulWidget {
 
 class TimerPageState extends State<TimerPage> {
   Duration selectedDuration = Duration(minutes: 1);
-
-  void _addTimer() async {
-    final labelController = TextEditingController();
-
-    final label = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Enter Timer Label"),
-        content: TextField(
-          controller: labelController,
-          autofocus: true,
-          decoration: InputDecoration(hintText: "e.g. Experiment 1"),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, null),
-              child: Text("Cancel")),
-          TextButton(
-              onPressed: () => Navigator.pop(context, labelController.text),
-              child: Text("OK")),
-        ],
-      ),
-    );
-
-    if (label != null && label.isNotEmpty) {
-      Provider.of<TimerProvider>(context, listen: false).addTimer(selectedDuration, label);
-    }
-  }
-
-  String _format(Duration d) {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return "${two(d.inHours)}:${two(d.inMinutes.remainder(60))}:${two(d.inSeconds.remainder(60))}";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,18 +24,7 @@ class TimerPageState extends State<TimerPage> {
           SizedBox(height: 10),
           Text('Pick Timer Duration', style: TextStyle(fontSize: 19)),
           SizedBox(height: 20),
-          SizedBox(
-            height: 150,
-            child: CupertinoTimerPicker(
-              mode: CupertinoTimerPickerMode.hms,
-              initialTimerDuration: selectedDuration,
-              onTimerDurationChanged: (val) {
-                setState(() {
-                  selectedDuration = val;
-                });
-              },
-            ),
-          ),
+          _buildPlatformTimerPicker(),
           SizedBox(height: 20),
           ElevatedButton(onPressed: _addTimer,
             style: ElevatedButton.styleFrom(
@@ -125,4 +83,130 @@ class TimerPageState extends State<TimerPage> {
       ),
     );
   }
+
+  Widget _buildPlatformTimerPicker() {
+    if (kIsWeb) {
+      // Web: Custom pickers for hours, minutes, seconds
+    int hours = selectedDuration.inHours;
+    int minutes = selectedDuration.inMinutes % 60;
+    int seconds = selectedDuration.inSeconds % 60;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _numberPicker(
+          label: 'Hours',
+          value: hours,
+          max: 23,
+          onChanged: (val) => setState(() {
+            selectedDuration = Duration(
+              hours: val,
+              minutes: minutes,
+              seconds: seconds,
+            );
+          }),
+        ),
+        SizedBox(width: 16),
+        _numberPicker(
+          label: 'Minutes',
+          value: minutes,
+          max: 59,
+          onChanged: (val) => setState(() {
+            selectedDuration = Duration(
+              hours: hours,
+              minutes: val,
+              seconds: seconds,
+            );
+          }),
+        ),
+        SizedBox(width: 16),
+        _numberPicker(
+          label: 'Seconds',
+          value: seconds,
+          max: 59,
+          onChanged: (val) => setState(() {
+            selectedDuration = Duration(
+              hours: hours,
+              minutes: minutes,
+              seconds: val,
+            );
+          }),
+        ),
+      ],
+    );
+    } else if (Platform.isIOS || Platform.isAndroid) {
+      return SizedBox(
+        height: 150,
+        child: CupertinoTimerPicker(
+          mode: CupertinoTimerPickerMode.hms,
+          initialTimerDuration: selectedDuration,
+          onTimerDurationChanged: (val) {
+            setState(() {
+              selectedDuration = val;
+            });
+          },
+        ),
+      );
+    } else {
+      return Text("Timer Picker not available on this platform.");
+    }
+  }
+
+  void _addTimer() async {
+    final labelController = TextEditingController();
+
+    final label = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Enter Timer Label"),
+        content: TextField(
+          controller: labelController,
+          autofocus: true,
+          decoration: InputDecoration(hintText: "e.g. Experiment 1"),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text("Cancel")),
+          TextButton(
+              onPressed: () => Navigator.pop(context, labelController.text),
+              child: Text("OK")),
+        ],
+      ),
+    );
+
+    final timerLabel = (label == null || label.trim().isEmpty)? 'Untitled Timer' : label.trim();
+    Provider.of<TimerProvider>(context, listen: false).addTimer(selectedDuration, timerLabel);
+  }
+
+  String _format(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return "${two(d.inHours)}:${two(d.inMinutes.remainder(60))}:${two(d.inSeconds.remainder(60))}";
+  }
+
+  Widget _numberPicker({
+  required String label,
+  required int value,
+  required int max,
+  required ValueChanged<int> onChanged,
+}) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(label),
+      DropdownButton<int>(
+        value: value,
+        items: List.generate(
+          max + 1,
+          (i) => DropdownMenuItem(value: i, child: Text(i.toString().padLeft(2, '0'))),
+        ),
+        onChanged: (newValue) {
+          if (newValue != null) {
+            onChanged(newValue);
+          }
+        },
+      ),
+    ],
+  );
+}
 }

@@ -59,6 +59,14 @@ class _EventEditingPageState extends State<EventEditingPage>{
       fromDate = event.from;
       toDate = event.to;
       _isAllDay = event.isAllDay;
+      _receiveNotification = event.notification;
+
+    final existingColorIndex = _colorCollection.indexWhere(
+      (color) => color.value == event.background.value
+    );
+    if (existingColorIndex != -1) {
+      _selectedColorIndex = existingColorIndex; // <-- Fix for incorrect color
+    }
     }
   }
 
@@ -115,16 +123,17 @@ class _EventEditingPageState extends State<EventEditingPage>{
                   child: Text('All day', style: TextStyle(fontSize: 18),),
                 ),
                 Expanded(
-                    child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Switch(
-                          value: _isAllDay,
-                          onChanged: (bool value) {
-                            setState(() {
-                              _isAllDay = value;
-                            });
-                          },
-                        ))),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Switch(
+                      value: _isAllDay,
+                      activeColor: Color.fromRGBO(67, 160, 71, 1),
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isAllDay = value;
+                        });
+                      },
+                    ))),
               ])),
             ListTile( //from date
               contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
@@ -265,23 +274,24 @@ class _EventEditingPageState extends State<EventEditingPage>{
                   child: Text('Receive notification', style: TextStyle(fontSize: 18),),
                 ),
                 Expanded(
-                    child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Switch(
-                          value: _receiveNotification,
-                          onChanged: (bool value) {
-                            setState(() {
-                              _receiveNotification = value;
-                              if(_receiveNotification){
-                                NotificationService().showNotification(
-                                  id: 0,
-                                  title: 'Event Reminder',
-                                  body: 'You have an event scheduled for ${Utils.toDate(fromDate)} at ${Utils.toTime(fromDate)}',
-                                );
-                              }
-                            });
-                          },
-                        ))),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Switch(
+                      value: _receiveNotification,
+                      activeColor: Color.fromRGBO(67, 160, 71, 1),
+                      onChanged: (bool value) {
+                        setState(() {
+                          _receiveNotification = value;
+                          if(_receiveNotification){
+                            NotificationService().showNotification(
+                              id: 0,
+                              title: 'Event Reminder',
+                              body: 'You have an event scheduled for ${Utils.toDate(fromDate)} at ${Utils.toTime(fromDate)}',
+                            );
+                          }
+                        });
+                      },
+                    ))),
               ])),
           ],
         ),
@@ -382,12 +392,12 @@ class _EventEditingPageState extends State<EventEditingPage>{
       final event = Event(
         documentId: widget.selectedEvent?.documentId,
         title: titleController.text,
-        description: '',
+        description: descController.text,
         from: fromDate,
         to: toDate,
         background: _colorCollection[_selectedColorIndex],
         isAllDay: _isAllDay,
-        //recurrenceRule: _recurrenceRule,
+        notification: _receiveNotification,
       );
 
       final isEditing = widget.selectedEvent != null;

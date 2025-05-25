@@ -33,7 +33,7 @@ class EventProvider extends ChangeNotifier {
           to: event.to,
           background: event.background,
           isAllDay: event.isAllDay,
-          recurrenceRule: event.recurrenceRule,);
+          notification: event.notification,);
 
       _events.add(newEvent);
       notifyListeners();

@@ -4,7 +4,6 @@ import 'package:lab_manager/inventory/folder.dart';
 import 'package:lab_manager/inventory/fungible.dart';
 import 'package:provider/provider.dart';
 import 'package:lab_manager/inventory/inventory_provider.dart';
-import 'package:lab_manager/inventory/new_item_form.dart';
 
 class FungiblesPage extends StatefulWidget {
   final Folder folder;
@@ -61,29 +60,19 @@ class FungiblesPageState extends State<FungiblesPage> {
               hint: Text("Order List"),
             ),
             IconButton(
-              icon: Icon(Icons.settings, color: Colors.grey[600]),
+              icon: Icon(Icons.settings, color: Colors.grey[350]),
               onPressed: () {
-                showModalBottomSheet(
+                showDialog(
                   context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  ),
                   builder: (context) {
+                    int tempLimit = inventoryProvider.quantityLimit;
                     return StatefulBuilder(
-                      builder: (context, setModalState) {
-                        final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
-
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
+                      builder: (context, setDialogState) {
+                        return AlertDialog(
+                          title: const Text("Settings"),
+                          content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                "Settings",
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 16),
                               ListTile(
                                 title: const Text("Change quantity limit"),
                                 trailing: Row(
@@ -92,24 +81,24 @@ class FungiblesPageState extends State<FungiblesPage> {
                                     IconButton(
                                       icon: const Icon(Icons.remove),
                                       onPressed: () {
-                                        if (inventoryProvider.quantityLimit > 0) {
-                                          setModalState(() {
-                                            inventoryProvider.setQuantityLimit(inventoryProvider.quantityLimit - 1);
+                                        if (tempLimit > 0) {
+                                          setDialogState(() {
+                                            tempLimit--;
                                           });
                                         }
                                       },
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      inventoryProvider.quantityLimit.toString(),
+                                      tempLimit.toString(),
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                     const SizedBox(width: 8),
                                     IconButton(
                                       icon: const Icon(Icons.add),
                                       onPressed: () {
-                                        setModalState(() {
-                                          inventoryProvider.setQuantityLimit(inventoryProvider.quantityLimit + 1);
+                                        setDialogState(() {
+                                          tempLimit++;
                                         });
                                       },
                                     ),
@@ -118,6 +107,22 @@ class FungiblesPageState extends State<FungiblesPage> {
                               ),
                             ],
                           ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
+                              ),
+                              onPressed: () {
+                                inventoryProvider.setQuantityLimit(tempLimit);
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Save', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
                         );
                       },
                     );
@@ -130,10 +135,11 @@ class FungiblesPageState extends State<FungiblesPage> {
       ),
       if (inventoryProvider.folderFungibles[widget.folder.documentId]?.isNotEmpty ?? false)
         Expanded(
-          child: ListView.separated(
+          child: ListView.builder(
             itemCount: fungibleList.length,
             itemBuilder: (context, index) {
-              return Slidable( startActionPane: ActionPane(
+              return Slidable( 
+                startActionPane: ActionPane(
                 motion: const DrawerMotion(),
                 children: [
                   SlidableAction(
@@ -145,37 +151,29 @@ class FungiblesPageState extends State<FungiblesPage> {
                     },
                   ),
                 ],),
+                endActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                    children: [
+                      SlidableAction(
+                        backgroundColor: Colors.blue,
+                        icon: Icons.edit,
+                        label: 'Edit',
+                        onPressed: (context) {
+                          _showAddFungibleDialog(context, fungible: fungibleList[index]);
+                        },
+                      ),
+                    ],
+                  ),
                 child: buildFungible(fungibleList[index], index),
               );
             },
-            separatorBuilder: (context, index) => Divider(
-              color: Colors.grey[700],
-              thickness: 1,
-              indent: 16,
-              endIndent: 16,
-            ),
           ),
         ),
       Padding(
         padding: EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              builder: (context) => Padding(
-                padding: EdgeInsets.only(
-                  top: 16,
-                  left: 16,
-                  right: 16,
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                ),
-                child: AddNewItemForm(folderId: widget.folder.documentId!),
-              ),
-            );
+            _showAddFungibleDialog(context);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Color.fromRGBO(67, 160, 71, 1),
@@ -194,46 +192,149 @@ class FungiblesPageState extends State<FungiblesPage> {
   }
 
   Widget buildFungible(Fungible fungible, int index) { 
-  final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
-
-  return ListTile(
-      title: Text(fungible.name, 
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-      subtitle: Text(fungible.description),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min, // Ensures the Row takes minimal space
-        children: [
-          IconButton(
-            icon: Icon(Icons.remove, color: Colors.grey),
-            onPressed: () async {
-              if (fungible.quantity > 0) {
+    final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
+    return Card(
+      child: ListTile(
+        title: Text(fungible.name, 
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+        subtitle: Text(fungible.description),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min, // Ensures the Row takes minimal space
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove, color: Colors.grey),
+              onPressed: () async {
+                if (fungible.quantity > 0) {
+                  inventoryProvider.updateFungible(widget.folder.documentId!, Fungible(
+                    documentId: fungible.documentId,
+                    name: fungible.name,
+                    description: fungible.description,
+                    quantity: fungible.quantity - 1,
+                  ));
+                }
+              },
+            ),
+            SizedBox(width: 8),
+            Text(
+              fungible.quantity.toString(),
+              style: TextStyle(
+                fontSize: 20,
+                color: fungible.quantity >= inventoryProvider.quantityLimit ? Color.fromRGBO(67, 160, 71, 1) : Colors.red,
+              ),
+            ),
+            SizedBox(width: 8),
+            IconButton(
+              icon: Icon(Icons.add, color: Colors.grey),
+              onPressed: () async {
                 inventoryProvider.updateFungible(widget.folder.documentId!, Fungible(
                   documentId: fungible.documentId,
-                  name: fungible.name,
-                  description: fungible.description,
-                  quantity: fungible.quantity - 1,
-                ));
+                    name: fungible.name,
+                    description: fungible.description,
+                    quantity: fungible.quantity + 1,));
+              }, 
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddFungibleDialog(BuildContext context, {Fungible? fungible}) {
+    final _formKey = GlobalKey<FormState>();
+    String name = fungible?.name ?? '';
+    String description = fungible?.description ?? '';
+    int quantity = fungible?.quantity ?? 0;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(fungible == null ? 'Add New Item' : 'Edit Item'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                initialValue: name,
+                cursorColor: Colors.grey[350],
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                onChanged: (value) => name = value,
+                validator: (value) =>
+                    value == null || value.trim().isEmpty ? 'Please enter a name' : null,
+              ),
+              TextFormField(
+                initialValue: description,
+                cursorColor: Colors.grey[350],
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                onChanged: (value) => description = value,
+              ),
+              TextFormField(
+                initialValue: quantity.toString(),
+                cursorColor: Colors.grey[350],
+                decoration: const InputDecoration(
+                  labelText: 'Quantity',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  final parsed = int.tryParse(value);
+                  quantity = parsed != null && parsed >= 0 ? parsed : 0;
+                },
+                validator: (value) {
+                  final parsed = int.tryParse(value ?? '');
+                  if (parsed == null || parsed < 0) {
+                    return 'Enter a valid number ≥ 0';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
+            ),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                final provider = Provider.of<InventoryProvider>(context, listen: false);
+                if (fungible == null) {
+                  provider.addFungible(widget.folder.documentId!, Fungible(name: name, description: description, quantity: quantity));
+                } else {
+                  provider.updateFungible(
+                    widget.folder.documentId!,
+                    Fungible(
+                      documentId: fungible.documentId,
+                      name: name,
+                      description: description,
+                      quantity: quantity,
+                    ),
+                  );
+                }
+                Navigator.pop(context);
               }
             },
-          ),
-          SizedBox(width: 8),
-          Text(
-            fungible.quantity.toString(),
-            style: TextStyle(
-              fontSize: 20,
-              color: fungible.quantity >= inventoryProvider.quantityLimit ? Color.fromRGBO(67, 160, 71, 1) : Colors.red,
-            ),
-          ),
-          SizedBox(width: 8),
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.grey),
-            onPressed: () async {
-              inventoryProvider.updateFungible(widget.folder.documentId!, Fungible(
-                documentId: fungible.documentId,
-                  name: fungible.name,
-                  description: fungible.description,
-                  quantity: fungible.quantity + 1,));
-            }, 
+            child: Text(fungible == null ? 'Save' : 'Update', style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -45,7 +45,7 @@ class _AccountPageState extends State<AccountPage> {
                 backgroundColor: Colors.red, 
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Logout',
+              child: const Text('Sign out',
                 style: TextStyle(fontSize: 18),),
             ),
           ],

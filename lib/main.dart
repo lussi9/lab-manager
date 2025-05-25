@@ -130,11 +130,31 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           labelColor: Colors.white,
           unselectedLabelColor: Colors.grey,
           indicatorColor: const Color.fromRGBO(67, 160, 71, 1),
-          tabs: const [
-            Tab(text: 'Journal', icon: Icon(Icons.calendar_today)),
-            Tab(text: 'Calendar', icon: Icon(Icons.event)),
-            Tab(text: 'Calculator', icon: Icon(Icons.calculate)),
-            Tab(text: 'Inventory', icon: Icon(Icons.table_chart)),
+          tabs: [
+      Tab(
+        text: 'Journal',
+        icon: Icon(
+          _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
+        ),
+      ),
+      Tab(
+        text: 'Calendar',
+        icon: Icon(
+          _selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
+        ),
+      ),
+      Tab(
+        text: 'Calculations',
+        icon: Icon(
+          _selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
+        ),
+      ),
+      Tab(
+        text: 'Inventory',
+        icon: Icon(
+          _selectedTabIndex == 3 ? Icons.inventory : Icons.inventory_2_outlined,
+        ),
+      ),
           ],
         ),
       ),

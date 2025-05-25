@@ -28,7 +28,4 @@ class EventDataSource extends CalendarDataSource{
   @override
   bool isAllDay(int index) => getEvent(index).isAllDay;
 
-  @override
-  String getRecurrenceRule(int index) => appointments![index].recurrenceRule;
-
 }

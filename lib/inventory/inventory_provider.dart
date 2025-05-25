@@ -118,6 +118,24 @@ class InventoryProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateFolder(Folder folder, String folderName) async {
+    try {
+      await FirebaseFirestore.instance.collection('Users').doc(userId)
+      .collection('folders').doc(folder.documentId).update({
+        'name': folderName,
+      });
+
+      final index = _folders.indexWhere((f) => f.documentId == folder.documentId);
+      if (index != -1) {
+        _folders[index].name = folderName;
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error updating Folder: $e');
+    }
+  }
+    
+
   Future<void> deleteFolder(Folder folder) async {
     try {
       await FirebaseFirestore.instance.collection('Users').doc(userId)

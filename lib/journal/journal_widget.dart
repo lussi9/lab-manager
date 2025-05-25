@@ -98,34 +98,36 @@ class JournalWidgetState extends State<JournalWidget> {
     );
   }
 
-  Widget buildEntry(Entry entry, int index) => ListTile(
-    leading: SizedBox(
-      height: 50, // Constrain the height of the leading widget
-      child: FittedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              DateFormat.d().format(entry.date),
-              style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromRGBO(67, 160, 71, 1)),
-            ),
-            Text(DateFormat.MMM().format(entry.date),
-                style: const TextStyle(fontSize: 16)),
-          ],
+  Widget buildEntry(Entry entry, int index) => Card(
+    child: ListTile(
+      leading: SizedBox(
+        height: 50, // Constrain the height of the leading widget
+        child: FittedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                DateFormat.d().format(entry.date),
+                style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(67, 160, 71, 1)),
+              ),
+              Text(DateFormat.MMM().format(entry.date),
+                  style: const TextStyle(fontSize: 16)),
+            ],
+          ),
         ),
       ),
-    ),
-    title: Text(entry.title,
-        style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(entry.description,
-        maxLines: 2, overflow: TextOverflow.ellipsis),
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EntryEditingPage(entry: entry),
+      title: Text(entry.title,
+          style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(entry.description,
+          maxLines: 2, overflow: TextOverflow.ellipsis),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EntryEditingPage(entry: entry),
+        ),
       ),
     ),
   );
