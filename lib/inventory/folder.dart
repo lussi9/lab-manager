@@ -13,16 +13,16 @@ class Folder {
 
   Map<String, dynamic> toJson() {
     return {
-      'Folder': name,
-      'Fungibles': fungibles?.map((fungible) => fungible.toJson()).toList(),
+      'name': name,
+      'fungibles': fungibles?.map((fungible) => fungible.toJson()).toList(),
     };
   }
 
   factory Folder.fromJson(Map<String, dynamic> json, String id) {
     return Folder(
       documentId: id,
-      name: json['Folder'],
-      fungibles: (json['Fungibles'] as List<dynamic>?)
+      name: json['name'],
+      fungibles: (json['fungibles'] as List<dynamic>?)
           ?.map((fungible) => Fungible.fromJson(fungible, id))
           .toList(),
     );

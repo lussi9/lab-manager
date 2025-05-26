@@ -3,17 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
-  final String nombre;
-  final String apellidos;
+  final String name;
+  final String surname;
   final String email;
-  final String nombreUsuario;
 
   const EmailVerificationScreen({
     Key? key,
-    required this.nombre,
-    required this.apellidos,
+    required this.name,
+    required this.surname,
     required this.email,
-    required this.nombreUsuario,
   }) : super(key: key);
 
   @override
@@ -23,22 +21,24 @@ class EmailVerificationScreen extends StatefulWidget {
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
 
-  // Método para guardar el usuario en Firestore
   Future<void> _saveUserData(User user) async {
-    await _firestore.collection('Users').doc(user.uid).set({
-      'nombre': widget.nombre,
-      'apellidos': widget.apellidos,
-      'email': widget.email,
-      'nombreUsuario': widget.nombreUsuario,
-    });
+    try{
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      await userDoc.set({
+        'name': widget.name,
+        'surname': widget.surname,
+        'email': widget.email,
+      });
+    } catch (e) {
+      print('Error saving user data: $e');
+      print('User id is:' + user.uid);   }
   }
 
-  // Método para verificar el correo
   Future<void> _checkEmailVerification() async {
     User? user = _auth.currentUser;
     await user?.reload();
+    user = _auth.currentUser;
     if (user != null && user.emailVerified) {
       await _saveUserData(user);
       ScaffoldMessenger.of(context).showSnackBar(

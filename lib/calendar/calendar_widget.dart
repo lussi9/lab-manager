@@ -1,8 +1,8 @@
 import 'package:lab_manager/calendar/event_data_source.dart';
 import 'package:flutter/material.dart';
+import 'package:lab_manager/calendar/event_provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:provider/provider.dart';
-import 'event_provider.dart';
 import 'package:lab_manager/calendar/event_editing_page.dart';
 import 'package:lab_manager/calendar/event.dart';
 

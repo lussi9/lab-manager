@@ -73,19 +73,27 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextFormField(
+                  cursorColor: Colors.grey[350],
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email address',
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  cursorColor: Colors.grey[350],
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: const OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible

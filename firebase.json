@@ -1,1 +1,43 @@
-{"firestore":{"rules":"firestore.rules","indexes":"firestore.indexes.json"},"flutter":{"platforms":{"android":{"default":{"projectId":"lab-manager-fb25b","appId":"1:293012500791:android:7e8f59124a19b24ab8aab2","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"lab-manager-fb25b","configurations":{"android":"1:293012500791:android:7e8f59124a19b24ab8aab2","ios":"1:293012500791:ios:7482949d4a095c10b8aab2","macos":"1:293012500791:ios:7482949d4a095c10b8aab2","web":"1:293012500791:web:624983d37008e963b8aab2","windows":"1:293012500791:web:a4edece7982ec17eb8aab2"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "lab-manager-fb25b",
+          "appId": "1:293012500791:android:7e8f59124a19b24ab8aab2",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lab-manager-fb25b",
+          "configurations": {
+            "android": "1:293012500791:android:7e8f59124a19b24ab8aab2",
+            "ios": "1:293012500791:ios:7482949d4a095c10b8aab2",
+            "macos": "1:293012500791:ios:7482949d4a095c10b8aab2",
+            "web": "1:293012500791:web:624983d37008e963b8aab2",
+            "windows": "1:293012500791:web:a4edece7982ec17eb8aab2"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'email_verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -12,7 +11,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance; // Instancia de Firestore
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -21,7 +19,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -33,11 +30,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _confirmPasswordController.dispose();
     _nameController.dispose();
     _surnameController.dispose();
-    _usernameController.dispose();
     super.dispose();
   }
 
-  // Método para registrar al usuario
   Future<void> _registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -50,24 +45,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         User? user = userCredential.user;
 
         if (user != null) {
-          await _firestore.collection('Users').doc(user.uid).set({
-            'nombre': _nameController.text.trim(),
-            'apellidos': _surnameController.text.trim(),
-            'email': _emailController.text.trim(),
-            'nombreUsuario': _usernameController.text.trim(),
-          });
-
-          // Enviar verificación de correo
           await user.sendEmailVerification();
 
-          // Navegar a la pantalla de verificación de correo
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => EmailVerificationScreen(
-                nombre: _nameController.text.trim(),
-                apellidos: _surnameController.text.trim(),
+                name: _nameController.text.trim(),
+                surname: _surnameController.text.trim(),
                 email: _emailController.text.trim(),
-                nombreUsuario: _usernameController.text.trim(),
               ),
             ),
           );
@@ -163,17 +148,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               }
                               return null;
                             },
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) => value!.isEmpty
-                                ? 'Introduce a username'
-                                : null,
                           ),
                           const SizedBox(height: 10),
                           TextFormField(

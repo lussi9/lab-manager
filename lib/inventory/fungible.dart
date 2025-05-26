@@ -13,18 +13,18 @@ class Fungible {
 
   Map<String, dynamic> toJson() {
     return {
-      'Fungible': name,
-      'Descripcion': description,
-      'Cantidad': quantity,
+      'name': name,
+      'description': description,
+      'quantity': quantity,
     };
   }
 
   factory Fungible.fromJson(Map<String, dynamic> json, String id) {
     return Fungible(
       documentId: id,
-      name: json['Fungible'],
-      description: json['Descripcion'],
-      quantity: json['Cantidad'],
+      name: json['name'],
+      description: json['description'],
+      quantity: json['quantity'],
     );
   }
 }

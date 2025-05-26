@@ -23,7 +23,7 @@ class JournalWidgetState extends State<JournalWidget> {
     });
   }
 
-  @override
+  @override ////////////////////////////////
   void initState() {
     super.initState();
     Provider.of<EntryProvider>(context, listen: false).loadEntries();

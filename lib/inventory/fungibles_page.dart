@@ -15,8 +15,6 @@ class FungiblesPage extends StatefulWidget {
 }
 
 class FungiblesPageState extends State<FungiblesPage> {
-  String _selectedOrder = "name";
-
   @override
   void initState(){
     super.initState();
@@ -25,7 +23,6 @@ class FungiblesPageState extends State<FungiblesPage> {
   @override
   Widget build(BuildContext context) {
     final inventoryProvider = Provider.of<InventoryProvider>(context);
-    final fungibleList = inventoryProvider.getFungibles(widget.folder.documentId!);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,12 +36,10 @@ class FungiblesPageState extends State<FungiblesPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             DropdownButton<String>(
-              value: _selectedOrder,
+              value: inventoryProvider.selectedOrder,
               onChanged: (value) {
                 setState(() {
-                  _selectedOrder = value!;
-                  Provider.of<InventoryProvider>(context, listen: false).setOrder(value);
-                  Provider.of<InventoryProvider>(context, listen: false).orderList(widget.folder.documentId!);
+                  Provider.of<InventoryProvider>(context, listen: false).setOrder(value!, widget.folder.documentId!);
                 });
               },
               items: [
@@ -134,11 +129,21 @@ class FungiblesPageState extends State<FungiblesPage> {
         ),
       ),
       if (inventoryProvider.folderFungibles[widget.folder.documentId]?.isNotEmpty ?? false)
-        Expanded(
-          child: ListView.builder(
-            itemCount: fungibleList.length,
-            itemBuilder: (context, index) {
-              return Slidable( 
+      Expanded(
+        child: StreamBuilder<List<Fungible>>(
+          stream: inventoryProvider.fungiblesStream(widget.folder.documentId!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            final fungibleList = snapshot.data ?? [];
+            if (fungibleList.isEmpty) {
+              return Center(child: Text("No items found."));
+            }
+            return ListView.builder(
+              itemCount: fungibleList.length,
+              itemBuilder: (context, index) {
+                return Slidable(
                 startActionPane: ActionPane(
                 motion: const DrawerMotion(),
                 children: [
@@ -167,8 +172,10 @@ class FungiblesPageState extends State<FungiblesPage> {
                 child: buildFungible(fungibleList[index], index),
               );
             },
-          ),
-        ),
+          );
+          }
+        )
+      ),
       Padding(
         padding: EdgeInsets.all(16.0),
         child: ElevatedButton(

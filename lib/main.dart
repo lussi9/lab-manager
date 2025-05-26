@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lab_manager/calendar/event.dart';
+import 'package:lab_manager/inventory/folder.dart';
+import 'package:lab_manager/journal/entry.dart';
 import 'package:lab_manager/objects/notification.dart';
 import 'package:lab_manager/journal/entry_editing_page.dart';
 import 'package:lab_manager/journal/entry_provider.dart';
@@ -15,8 +18,7 @@ import 'inventory/inventory_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:lab_manager/account/account_page.dart';
-import 'package:lab_manager/account/login_screen.dart';
-import 'package:lab_manager/account/register_screen.dart';
+import 'package:lab_manager/account/auth_user_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,22 +30,28 @@ Future<void> main() async {
 
   final eventProvider = EventProvider();
   final entryProvider = EntryProvider();
-  final timerProvider = TimerProvider();
   final inventoryProvider = InventoryProvider();
-
-  // Load events and entries before the app starts
-  await Future.wait([ //run them concurrently
-    eventProvider.loadEvents(),
-    entryProvider.loadEntries(),
-  ]);
+  final timerProvider = TimerProvider();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => eventProvider),
         ChangeNotifierProvider(create: (_) => entryProvider),
-        ChangeNotifierProvider(create: (_) => timerProvider),
         ChangeNotifierProvider(create: (_) => inventoryProvider),
+        ChangeNotifierProvider(create: (_) => timerProvider),
+        StreamProvider<List<Event>>(
+          create: (context) => Provider.of<EventProvider>(context, listen: false).eventStream(),
+          initialData: const [],
+        ),
+        StreamProvider<List<Entry>>(
+          create: (context) => Provider.of<EntryProvider>(context, listen: false).entryStream(),
+          initialData: const [],
+        ),
+        StreamProvider<List<Folder>>(
+          create: (context) => Provider.of<InventoryProvider>(context, listen: false).folderStream(),
+          initialData: const [],
+        ),
       ],
       child: MyApp(),
     ),
@@ -100,65 +108,65 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(MyApp.title),
-      centerTitle: true,
-      actions: [
-      IconButton(
-        icon: Icon(Icons.person), // User icon
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AccountPage(), // Navigate to AccountPage
-            ),
-          );
-        },
-      ),],
-    ),
-    body: TabBarView(
-      controller: _tabController,
-      children: [
-        JournalWidget(),
-        CalendarWidget(),
-        CalculationsWidget(),
-        InventoryWidget(), 
-      ],
-    ),
-    bottomNavigationBar: Material(
-        child: TabBar(
-          controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: const Color.fromRGBO(67, 160, 71, 1),
-          tabs: [
-      Tab(
-        text: 'Journal',
-        icon: Icon(
-          _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
-        ),
+      appBar: AppBar(
+        title: Text(MyApp.title),
+        centerTitle: true,
+        actions: [
+        IconButton(
+          icon: Icon(Icons.person), // User icon
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AccountPage(), // Navigate to AccountPage
+              ),
+            );
+          },
+        ),],
       ),
-      Tab(
-        text: 'Calendar',
-        icon: Icon(
-          _selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          JournalWidget(),
+          CalendarWidget(),
+          CalculationsWidget(),
+          InventoryWidget(), 
+        ],
       ),
-      Tab(
-        text: 'Calculations',
-        icon: Icon(
-          _selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
+      bottomNavigationBar: Material(
+        child: SizedBox(
+          height: 86,
+          child: TabBar(
+            controller: _tabController,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: const Color.fromRGBO(67, 160, 71, 1),
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: [
+        Tab(
+          icon: Icon(
+            _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
+          size: 36),
         ),
-      ),
-      Tab(
-        text: 'Inventory',
-        icon: Icon(
-          _selectedTabIndex == 3 ? Icons.inventory : Icons.inventory_2_outlined,
+        Tab(
+          icon: Icon(
+            _selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
+          size: 36),
         ),
-      ),
-          ],
+        Tab(
+          icon: Icon(
+            _selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
+          size: 36),
         ),
+        Tab(
+          icon: Icon(
+            _selectedTabIndex == 3 ? Icons.inventory : Icons.inventory_2_outlined,
+          size: 36),
+        ),
+            ],
+          ),
       ),
-    floatingActionButton: _buildFloatingActionButton(),
+        ),
+      floatingActionButton: _buildFloatingActionButton(),
   );
 
   Widget? _buildFloatingActionButton() {
@@ -187,57 +195,4 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     }
   }
 
-}
-
-
-class AuthUserPage extends StatefulWidget {
-  const AuthUserPage({super.key});
-
-  @override
-  State<AuthUserPage> createState() => _AuthUserPageState();
-}
-
-class _AuthUserPageState extends State<AuthUserPage> {
-  @override
-  Widget build(BuildContext context) { 
-    return Scaffold(
-      body: Center(
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed:  () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => LoginScreen(), // Navigate to login screen
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-              minimumSize: const Size(180, 60),
-            ),
-            child: const Text('Sign in', style: TextStyle(fontSize: 22, color: Colors.white),),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RegisterScreen(),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-              minimumSize: const Size(180, 60),
-            ),
-            child: const Text('Register', style: TextStyle(fontSize: 22, color: Colors.white)),
-          ),
-        ],
-      ),
-      ),
-    );
-  }
 }

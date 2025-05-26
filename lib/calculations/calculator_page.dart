@@ -31,6 +31,7 @@ class CalculatorPageState extends State<CalculatorPage> {
       body: Column(
        children: [
         Expanded(
+          flex: 1,
           child: Column(
             children: [
               Container(
@@ -53,10 +54,11 @@ class CalculatorPageState extends State<CalculatorPage> {
         Expanded(
           flex: 4,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
             child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: buttons.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1.075), 
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1), 
               itemBuilder: (BuildContext context, int index){
               if(index == 0){ // C
                 return MyButton(

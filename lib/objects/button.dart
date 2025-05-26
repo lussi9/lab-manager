@@ -15,7 +15,7 @@ class MyButton extends StatelessWidget {
       onTap: buttonTapped,
       onLongPress: longPress,
       child: Padding(
-        padding: EdgeInsets.all(6),
+        padding: EdgeInsets.all(5),
       child: Container(
         decoration: BoxDecoration(
           color: color,

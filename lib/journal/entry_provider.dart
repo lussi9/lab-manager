@@ -9,10 +9,23 @@ class EntryProvider extends ChangeNotifier {
   List<Entry> get entries => _entries;
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
+  Stream<List<Entry>> entryStream() {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('entries')
+        .snapshots()
+        .map((snapshot) {
+          print('Entries snapshot: ${snapshot.docs.length}');
+          return snapshot.docs.map((doc) => Entry.fromJson(doc.data(), doc.id)).toList();
+        });
+  }
+
   Future<void> addEntry(Entry entry) async {
     try {
       final docRef = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('entries')
           .add(entry.toJson());
@@ -36,7 +49,7 @@ class EntryProvider extends ChangeNotifier {
   Future<void> deleteEntry(Entry entry) async {
     try {
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('entries')
           .doc(entry.documentId)
@@ -52,7 +65,7 @@ class EntryProvider extends ChangeNotifier {
   Future<void> editEntry(Entry oldEntry, Entry newEntry) async {
     try {
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('entries')
           .doc(oldEntry.documentId)
@@ -63,6 +76,7 @@ class EntryProvider extends ChangeNotifier {
       _entries[index].documentId = oldEntry.documentId; // Keep the same document ID
       _entries.sort((a, b) => b.date.compareTo(a.date)); // Sort again after edit
       notifyListeners();
+
     } catch (e) {
       print('Error editing entry: $e');
     }
@@ -71,7 +85,7 @@ class EntryProvider extends ChangeNotifier {
   Future<void> loadEntries() async {
     try {
       final entriesData = await FirebaseFirestore.instance
-          .collection('Users').doc(userId)
+          .collection('users').doc(userId)
           .collection('entries').get();
 
       _entries.clear();

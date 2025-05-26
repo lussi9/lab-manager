@@ -27,16 +27,16 @@ class InventoryWidgetState extends State<InventoryWidget> {
   }
 
   Widget buildFolders() {
-    final inventoryProvider = Provider.of<InventoryProvider>(context);
+    final folders = Provider.of<InventoryProvider>(context).folders;
     return Column(
       children: [
         Expanded(
-          child: inventoryProvider.folders.isEmpty
+          child: folders.isEmpty
             ? const Center(child: Text("No folders found"))
             : ListView.builder(
-              itemCount: inventoryProvider.folders.length,
+              itemCount: folders.length,
               itemBuilder: (context, index) {
-                final folder = inventoryProvider.folders[index];
+                final folder = folders[index];
                 return Slidable(
                   startActionPane: ActionPane(
                     motion: const DrawerMotion(),
