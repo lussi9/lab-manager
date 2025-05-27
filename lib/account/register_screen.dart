@@ -178,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: _confirmPasswordController,
                             obscureText: !_isConfirmPasswordVisible,
                             decoration: InputDecoration(
-                              labelText: 'Password',
+                              labelText: 'Repeat your password',
                               border: const OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(

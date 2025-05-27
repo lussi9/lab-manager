@@ -29,11 +29,7 @@ class EventProvider extends ChangeNotifier {
 
   Future<void> addEvent(Event event) async {
     try {
-      final docRef = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('events')
-          .add(event.toJson());
+      final docRef = await FirebaseFirestore.instance.collection('users').doc(userId).collection('events').add(event.toJson());
       
           final newEvent = Event(
           documentId: docRef.id,
