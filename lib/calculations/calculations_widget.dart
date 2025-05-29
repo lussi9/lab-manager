@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lab_manager/calculations/calculator_page.dart';
 import 'package:lab_manager/calculations/timer_page.dart';
 import 'package:lab_manager/calculations/converter_page.dart';
-import 'package:lab_manager/objects/squareButton.dart';
+import 'package:lab_manager/objects/square_button.dart';
 
 class CalculationsWidget extends StatelessWidget {
   @override

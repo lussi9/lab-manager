@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lab_manager/account/account_page.dart';
 import 'package:lab_manager/calendar/event.dart';
 import 'package:lab_manager/inventory/folder.dart';
 import 'package:lab_manager/journal/entry.dart';
@@ -17,8 +18,8 @@ import 'journal/journal_widget.dart';
 import 'inventory/inventory_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:lab_manager/account/account_page.dart';
 import 'package:lab_manager/account/auth_user_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,17 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData.dark().copyWith(
           primaryColor: Color.fromRGBO(67, 160, 71, 1),
         ),
+
+        locale: const Locale('en', 'GB'), // Set locale to English (United Kingdom)
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', 'GB'), // English (United Kingdom)
+        ],
+
         home: user != null? MainPage() : AuthUserPage(),
     );
   }
@@ -112,16 +124,20 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         title: Text(MyApp.title),
         centerTitle: true,
         actions: [
-        IconButton(
-          icon: Icon(Icons.person), // User icon
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AccountPage(), // Navigate to AccountPage
-              ),
-            );
-          },
-        ),],
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: Icon(Icons.person), // User icon
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AccountPage(), // Navigate to AccountPage
+                  ),
+                );
+              },
+            )
+          )
+        ],
       ),
       body: TabBarView(
         controller: _tabController,
@@ -142,30 +158,18 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             indicatorColor: const Color.fromRGBO(67, 160, 71, 1),
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: [
-        Tab(
-          icon: Icon(
-            _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
-          size: 36),
-        ),
-        Tab(
-          icon: Icon(
-            _selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
-          size: 36),
-        ),
-        Tab(
-          icon: Icon(
-            _selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
-          size: 36),
-        ),
-        Tab(
-          icon: Icon(
-            _selectedTabIndex == 3 ? Icons.inventory : Icons.inventory_2_outlined,
-          size: 36),
-        ),
+              Tab(icon: Icon( _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
+                  size: 36)),
+              Tab(icon: Icon(_selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
+                size: 36)),
+              Tab(icon: Icon(_selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
+                size: 36)),
+              Tab(icon: Icon(_selectedTabIndex == 3 ? Icons.inventory : Icons.inventory_2_outlined,
+                size: 36)),
             ],
           ),
-      ),
         ),
+      ),
       floatingActionButton: _buildFloatingActionButton(),
   );
 

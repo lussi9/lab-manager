@@ -184,7 +184,7 @@ class TimerPageState extends State<TimerPage> {
     return "${two(d.inHours)}:${two(d.inMinutes.remainder(60))}:${two(d.inSeconds.remainder(60))}";
   }
 
-  Widget _numberPicker({
+Widget _numberPicker({
   required String label,
   required int value,
   required int max,

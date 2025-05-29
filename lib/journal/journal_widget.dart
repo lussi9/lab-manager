@@ -17,23 +17,24 @@ class JournalWidgetState extends State<JournalWidget> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  void _filterEntries(String query) {
-    setState(() {
-      _searchQuery = query; // Update the search query
-    });
-  }
-
   @override ////////////////////////////////
   void initState() {
     super.initState();
     Provider.of<EntryProvider>(context, listen: false).loadEntries();
   }
 
+
+  void _filterEntries(String query) {
+    setState(() {
+      _searchQuery = query; // Actualiza la consulta de búsqueda
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final entryProvider = Provider.of<EntryProvider>(context);
     final entries = entryProvider.entries;
-    // Filter entries based on the search query
+    // Filtra las entradas según la consulta de búsqueda
     final filteredEntries = _searchQuery.isEmpty
         ? entries
         : entries

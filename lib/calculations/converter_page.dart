@@ -27,8 +27,8 @@ class _ConverterViewState extends State<ConverterView> {
     'Volume': {
       'Liters': 1.0,
       'Milliliters': 1000.0,
-      'Micrograms': 1000000.0,
-      'Nanograms': 1000000000.0,
+      'Microliters': 1000000.0,
+      'Nanoliters': 1000000000.0,
       'Cubic Meters': 0.001,
     },
     'Concentration': {

@@ -4,6 +4,7 @@ import 'package:lab_manager/inventory/folder.dart';
 import 'package:provider/provider.dart';
 import 'package:lab_manager/inventory/inventory_provider.dart';
 import 'package:lab_manager/inventory/fungibles_page.dart';
+import 'package:lab_manager/objects/add_item_button.dart';
 
 class InventoryWidget extends StatefulWidget {
   const InventoryWidget({super.key});
@@ -32,10 +33,17 @@ class InventoryWidgetState extends State<InventoryWidget> {
       children: [
         Expanded(
           child: folders.isEmpty
-            ? const Center(child: Text("No folders found"))
+            ? ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, index){
+                  return AddItem(onPressed: () => _showAddFolderDialog(context));
+              } )
             : ListView.builder(
-              itemCount: folders.length,
+              itemCount: folders.length + 1 ,
               itemBuilder: (context, index) {
+                if (index == folders.length) { // Add Item button as the last item
+                  return AddItem(onPressed: () => _showAddFolderDialog(context));
+                }
                 final folder = folders[index];
                 return Slidable(
                   startActionPane: ActionPane(
@@ -68,25 +76,6 @@ class InventoryWidgetState extends State<InventoryWidget> {
               },
             ),
           ),
-        Padding(
-          padding: EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: () {
-              _showAddFolderDialog(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              "Add folder",
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -106,6 +95,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
           ),
         );
       },
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
     ),
   );
 

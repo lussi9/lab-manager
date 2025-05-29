@@ -31,8 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter # for localization support
+
   syncfusion_flutter_calendar: ^29.1.37 # calendar widget
-  intl: ^0.20.2 # handle dates
+  intl: ^0.19.0 # handle dates
   cupertino_icons: ^1.0.2 # iOS style icons
   math_expressions: ^2.0.1 # for parsing and evaluating mathematical expressions
   flutter_local_notifications: ^19.1.0 # local notifications

@@ -346,7 +346,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
 
     if (date.isBefore(fromDate)) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('The end date cannot be prior to the start date.')),
+      const SnackBar(content: Text('The end date cannot be prior to the start date.', style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,),
     );
     return;
   }

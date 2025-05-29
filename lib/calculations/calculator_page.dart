@@ -28,138 +28,154 @@ class CalculatorPageState extends State<CalculatorPage> {
         title: const Text('Calculator'),
         backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       ),
-      body: Column(
-       children: [
-        Expanded(
-          flex: 1,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000, maxHeight: 700),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  userInput, style: const TextStyle(fontSize: 25, color: Colors.grey),
-                ),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        userInput, style: const TextStyle(fontSize: 25, color: Colors.grey),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        result.toString(), style: const TextStyle(fontSize: 40)
+                      ),
+                    )
+                  ],
+                )
               ),
-              Container(
-                padding: const EdgeInsets.only(left: 15, right: 15),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  result.toString(), style: const TextStyle(fontSize: 40)
-                ),
+              Expanded(
+                flex: 8,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double width = constraints.maxWidth;
+                    double height = constraints.maxHeight - 20;
+
+                    int columns = 4;
+
+                    double spacing = 3;
+                    double itemWidth = (width - spacing * (columns - 1)) / columns;
+                    double itemHeight = height / 5; // Total rows = 5
+                    double aspectRatio = itemWidth / itemHeight;
+
+                    return GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: buttons.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, mainAxisSpacing: spacing, crossAxisSpacing: spacing, childAspectRatio: aspectRatio), 
+                      itemBuilder: (BuildContext context, int index){
+                      if(index == 0){ // C
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[600],
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput = userInput.substring(0, userInput.length - 1);
+                            });
+                          },
+                          longPress: () {
+                            setState(() {
+                              userInput = '';
+                              result = '0';
+                            });
+                          },
+                        );
+                      } 
+
+                      else if(index == 1){ // sqrt
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[600],
+                          textColor: Colors.white,
+                        );
+                      }
+
+                      else if(index == 2){ // %
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[600],
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput += buttons[index];
+                            });
+                          }
+                        );
+                      }
+
+                      else if(index == 16){ // ()
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[600],
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              if (parenthesesCount % 2 == 0) {
+                                userInput += '(';
+                              } else {
+                                userInput += ')';
+                              }
+                              parenthesesCount++;
+                            });
+                          }
+                        );
+                      }
+
+                      else if(index == 18){ // .
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Colors.grey[600],
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              userInput += buttons[index];
+                            });
+                          }
+                        );
+                      }
+
+                      else if(index == 19) { // =
+                        return MyButton(
+                          buttonText: buttons[index],
+                          color: Color.fromRGBO(67, 160, 71, 1),
+                          textColor: Colors.white,
+                          buttonTapped: () {
+                            setState(() {
+                              equalPressed();
+                            });
+                          }
+                        );
+                      }
+
+                      else{
+                        return MyButton(
+                          buttonTapped: (){
+                            setState(() {
+                              userInput += buttons[index];
+                            });
+                          },
+                          buttonText: buttons[index],
+                          color: isOperator(buttons[index])? Color.fromRGBO(67, 160, 71, 1) : Colors.grey[800],
+                          textColor: Colors.white,
+                        );
+                      }
+                    });
+                  }
+                ) 
               )
             ],
-          )
-        ),
-        Expanded(
-          flex: 4,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: buttons.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1), 
-              itemBuilder: (BuildContext context, int index){
-              if(index == 0){ // C
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Colors.grey[600],
-                  textColor: Colors.white,
-                  buttonTapped: () {
-                    setState(() {
-                      userInput = userInput.substring(0, userInput.length - 1);
-                    });
-                  },
-                  longPress: () {
-                    setState(() {
-                      userInput = '';
-                      result = '0';
-                    });
-                  },
-                );
-              } 
-
-              else if(index == 1){ // sqrt
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Colors.grey[600],
-                  textColor: Colors.white,
-                );
-              }
-
-              else if(index == 2){ // %
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Colors.grey[600],
-                  textColor: Colors.white,
-                  buttonTapped: () {
-                    setState(() {
-                      userInput += buttons[index];
-                    });
-                  }
-                );
-              }
-
-              else if(index == 16){ // ()
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Colors.grey[600],
-                  textColor: Colors.white,
-                  buttonTapped: () {
-                    setState(() {
-                      if (parenthesesCount % 2 == 0) {
-                        userInput += '(';
-                      } else {
-                        userInput += ')';
-                      }
-                      parenthesesCount++;
-                    });
-                  }
-                );
-              }
-
-              else if(index == 18){ // .
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Colors.grey[600],
-                  textColor: Colors.white,
-                  buttonTapped: () {
-                    setState(() {
-                      userInput += buttons[index];
-                    });
-                  }
-                );
-              }
-
-              else if(index == 19) { // =
-                return MyButton(
-                  buttonText: buttons[index],
-                  color: Color.fromRGBO(67, 160, 71, 1),
-                  textColor: Colors.white,
-                  buttonTapped: () {
-                    setState(() {
-                      equalPressed();
-                    });
-                  }
-                );
-              }
-
-              else{
-                return MyButton(
-                  buttonTapped: (){
-                    setState(() {
-                      userInput += buttons[index];
-                    });
-                  },
-                  buttonText: buttons[index],
-                  color: isOperator(buttons[index])? Color.fromRGBO(67, 160, 71, 1) : Colors.grey[800],
-                  textColor: Colors.white,
-                );
-              }
-            })
-            )
-          )
-       ],
+          ),
+        )
       ),
     );
   }

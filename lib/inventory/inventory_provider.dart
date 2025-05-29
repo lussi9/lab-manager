@@ -73,7 +73,7 @@ class InventoryProvider extends ChangeNotifier {
     }
   }
 
-    Future<void> loadFungibles(String folderId) async {
+  Future<void> loadFungibles(String folderId) async {
     final fungiblesData = await FirebaseFirestore.instance.collection('users').doc(userId)
       .collection('folders').doc(folderId)
       .collection('fungibles').get();
@@ -129,8 +129,8 @@ class InventoryProvider extends ChangeNotifier {
       final index = _folders.indexWhere((f) => f.documentId == folder.documentId);
       if (index != -1) {
         _folders[index].name = folderName;
-        notifyListeners();
       }
+      notifyListeners();
     } catch (e) {
       print('Error updating Folder: $e');
     }
@@ -151,6 +151,7 @@ class InventoryProvider extends ChangeNotifier {
 
       await folderRef.delete();
       folderFungibles.remove(folder.documentId);
+      notifyListeners();
     } catch (e) {
       print('Error deleting Folder: $e');
     }

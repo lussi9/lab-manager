@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:lab_manager/inventory/folder.dart';
 import 'package:lab_manager/inventory/fungible.dart';
+import 'package:lab_manager/objects/add_item_button.dart';
 import 'package:provider/provider.dart';
 import 'package:lab_manager/inventory/inventory_provider.dart';
 
@@ -23,226 +24,225 @@ class FungiblesPageState extends State<FungiblesPage> {
   @override
   Widget build(BuildContext context) {
     final inventoryProvider = Provider.of<InventoryProvider>(context);
-
+    final fungibleList = inventoryProvider.getFungibles(widget.folder.documentId!);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.folder.name),
       ),
       body: Column(
         children: [
-        Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            DropdownButton<String>(
-              value: inventoryProvider.selectedOrder,
-              onChanged: (value) {
-                setState(() {
-                  Provider.of<InventoryProvider>(context, listen: false).setOrder(value!, widget.folder.documentId!);
-                });
-              },
-              items: [
-                DropdownMenuItem(
-                  value: "name",
-                  child: Text("Order by Name"),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  value: inventoryProvider.selectedOrder,
+                  onChanged: (value) {
+                    setState(() {
+                      Provider.of<InventoryProvider>(context, listen: false).setOrder(value!, widget.folder.documentId!);
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem(
+                      value: "name",
+                      child: Text("Order by Name"),
+                    ),
+                    DropdownMenuItem(
+                      value: "quantity",
+                      child: Text("Order by Quantity"),
+                    ),
+                  ],
+                  hint: Text("Order List"),
                 ),
-                DropdownMenuItem(
-                  value: "quantity",
-                  child: Text("Order by Quantity"),
-                ),
-              ],
-              hint: Text("Order List"),
-            ),
-            IconButton(
-              icon: Icon(Icons.settings, color: Colors.grey[350]),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    int tempLimit = inventoryProvider.quantityLimit;
-                    return StatefulBuilder(
-                      builder: (context, setDialogState) {
-                        return AlertDialog(
-                          title: const Text("Settings"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ListTile(
-                                title: const Text("Change quantity limit"),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove),
-                                      onPressed: () {
-                                        if (tempLimit > 0) {
-                                          setDialogState(() {
-                                            tempLimit--;
-                                          });
-                                        }
-                                      },
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.grey[350]),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        int tempLimit = inventoryProvider.quantityLimit;
+                        return StatefulBuilder(
+                          builder: (context, setDialogState) {
+                            return AlertDialog(
+                              title: const Text("Settings"),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    title: const Text("Change quantity limit"),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.remove),
+                                          onPressed: () {
+                                            if (tempLimit > 0) {
+                                              setDialogState(() {
+                                                tempLimit--;
+                                              });
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          tempLimit.toString(),
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        IconButton(
+                                          icon: const Icon(Icons.add),
+                                          onPressed: () {
+                                            setDialogState(() {
+                                              tempLimit++;
+                                            });
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      tempLimit.toString(),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    IconButton(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {
-                                        setDialogState(() {
-                                          tempLimit++;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
                                 ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
-                              ),
-                              onPressed: () {
-                                inventoryProvider.setQuantityLimit(tempLimit);
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Save', style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
+                                  ),
+                                  onPressed: () {
+                                    inventoryProvider.setQuantityLimit(tempLimit);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Save', style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                     );
                   },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: fungibleList.isEmpty ? 
+            ListView.builder(
+              itemCount: 1,
+              itemBuilder: (context, index){
+                return AddItem(onPressed: () => _showAddFungibleDialog(context));
+            })
+            :
+            ListView.builder(
+              itemCount: fungibleList.length + 1,
+              itemBuilder: (context, index) {
+                if (index == fungibleList.length) { // Add Item button as the last item
+                  return AddItem(onPressed: () => _showAddFungibleDialog(context));
+                }
+                return Slidable(
+                  startActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  children: [
+                    SlidableAction(
+                      backgroundColor: Colors.red,
+                      icon: Icons.delete,
+                      label: 'Delete',
+                      onPressed: (context) {
+                        Provider.of<InventoryProvider>(context, listen: false).deleteFungible(widget.folder.documentId!, fungibleList[index]);
+                      },
+                    ),
+                  ],),
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          backgroundColor: Colors.blue,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                          onPressed: (context) {
+                            _showAddFungibleDialog(context, fungible: fungibleList[index]);
+                          },
+                        ),
+                      ],
+                    ),
+                  child: buildFungible(fungibleList[index], index),
                 );
               },
-            ),
-          ],
-        ),
-      ),
-      if (inventoryProvider.folderFungibles[widget.folder.documentId]?.isNotEmpty ?? false)
-      Expanded(
-        child: StreamBuilder<List<Fungible>>(
-          stream: inventoryProvider.fungiblesStream(widget.folder.documentId!),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-            final fungibleList = snapshot.data ?? [];
-            if (fungibleList.isEmpty) {
-              return Center(child: Text("No items found."));
-            }
-            return ListView.builder(
-              itemCount: fungibleList.length,
-              itemBuilder: (context, index) {
-                return Slidable(
-                startActionPane: ActionPane(
-                motion: const DrawerMotion(),
-                children: [
-                  SlidableAction(
-                    backgroundColor: Colors.red,
-                    icon: Icons.delete,
-                    label: 'Delete',
-                    onPressed: (context) {
-                      Provider.of<InventoryProvider>(context, listen: false).deleteFungible(widget.folder.documentId!, fungibleList[index]);
-                    },
-                  ),
-                ],),
-                endActionPane: ActionPane(
-                  motion: const DrawerMotion(),
-                    children: [
-                      SlidableAction(
-                        backgroundColor: Colors.blue,
-                        icon: Icons.edit,
-                        label: 'Edit',
-                        onPressed: (context) {
-                          _showAddFungibleDialog(context, fungible: fungibleList[index]);
-                        },
-                      ),
-                    ],
-                  ),
-                child: buildFungible(fungibleList[index], index),
-              );
-            },
-          );
-          }
-        )
-      ),
-      Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            _showAddFungibleDialog(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            )
           ),
-          child: Text(
-            "Add item",
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-      ),
-    ],),);
+        ]
+      )
+    );
   }
 
   Widget buildFungible(Fungible fungible, int index) { 
     final inventoryProvider = Provider.of<InventoryProvider>(context, listen: false);
     return Card(
-      child: ListTile(
-        title: Text(fungible.name, 
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-        subtitle: Text(fungible.description),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min, // Ensures the Row takes minimal space
-          children: [
-            IconButton(
-              icon: Icon(Icons.remove, color: Colors.grey),
-              onPressed: () async {
-                if (fungible.quantity > 0) {
-                  inventoryProvider.updateFungible(widget.folder.documentId!, Fungible(
-                    documentId: fungible.documentId,
-                    name: fungible.name,
-                    description: fungible.description,
-                    quantity: fungible.quantity - 1,
-                  ));
-                }
-              },
+      child: Container(
+        height: 70, // Set the minimum height for the ListTile
+        child: Center(
+          child: ListTile(
+            title: Text(
+              fungible.name, 
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(width: 8),
-            Text(
-              fungible.quantity.toString(),
-              style: TextStyle(
-                fontSize: 20,
-                color: fungible.quantity >= inventoryProvider.quantityLimit ? Color.fromRGBO(67, 160, 71, 1) : Colors.red,
-              ),
+            subtitle: fungible.description.isNotEmpty 
+                ? Text(fungible.description) 
+                : null,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.remove, color: Colors.grey),
+                  onPressed: () async {
+                    if (fungible.quantity > 0) {
+                      inventoryProvider.updateFungible(
+                        widget.folder.documentId!,
+                        Fungible(
+                          documentId: fungible.documentId,
+                          name: fungible.name,
+                          description: fungible.description,
+                          quantity: fungible.quantity - 1,
+                        ),
+                      );
+                    }
+                  },
+                ),
+                SizedBox(width: 8),
+                Text(
+                  fungible.quantity.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: fungible.quantity >= inventoryProvider.quantityLimit 
+                        ? Color.fromRGBO(67, 160, 71, 1) 
+                        : Colors.red,
+                  ),
+                ),
+                SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(Icons.add, color: Colors.grey),
+                  onPressed: () async {
+                    inventoryProvider.updateFungible(
+                      widget.folder.documentId!,
+                      Fungible(
+                        documentId: fungible.documentId,
+                        name: fungible.name,
+                        description: fungible.description,
+                        quantity: fungible.quantity + 1,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            SizedBox(width: 8),
-            IconButton(
-              icon: Icon(Icons.add, color: Colors.grey),
-              onPressed: () async {
-                inventoryProvider.updateFungible(widget.folder.documentId!, Fungible(
-                  documentId: fungible.documentId,
-                    name: fungible.name,
-                    description: fungible.description,
-                    quantity: fungible.quantity + 1,));
-              }, 
-            ),
-          ],
-        ),
-      ),
+          ),
+        )
+      )
     );
   }
 

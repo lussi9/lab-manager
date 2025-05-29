@@ -150,8 +150,8 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
     final date = await showDatePicker(
       context: context,
       initialDate: fromDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(2015),
+      lastDate: DateTime.now(),
     );
 
     if (date == null) return;

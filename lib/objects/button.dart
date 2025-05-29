@@ -15,11 +15,11 @@ class MyButton extends StatelessWidget {
       onTap: buttonTapped,
       onLongPress: longPress,
       child: Padding(
-        padding: EdgeInsets.all(5),
+        padding: EdgeInsets.all(2.5),
       child: Container(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
         ),
         alignment: Alignment.center,
         child: Text(

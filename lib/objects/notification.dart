@@ -8,16 +8,23 @@ class NotificationService {
 
   Future<void> initNotification() async {
     if (_isInitialized) return;
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initializationSettingsAndroid = 
+        AndroidInitializationSettings('@mipmap/ic_launcher'); // android initialization settings
 
-    // iOS InitializationSettings can be added here if needed
-
+    const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      ); // iOS initialization settings
 
     const initSettings = InitializationSettings(
       android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
     );
+
     await notificationsPlugin.initialize(initSettings);
+    _isInitialized = true;
   }
 
   NotificationDetails notificationDetails() {
@@ -39,7 +46,7 @@ class NotificationService {
       id,
       title,
       body,
-      const NotificationDetails(),
+      notificationDetails(),
     );
   }
 }
