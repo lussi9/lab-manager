@@ -283,11 +283,14 @@ class _EventEditingPageState extends State<EventEditingPage>{
                         setState(() {
                           _receiveNotification = value;
                           if(_receiveNotification){
-                            NotificationService().showNotification(
-                              id: 0,
+                            NotificationService().scheduleNotification(
+                              id: fromDate.hashCode, // unique ID per event
                               title: 'Event Reminder',
                               body: 'You have an event scheduled for ${Utils.toDate(fromDate)} at ${Utils.toTime(fromDate)}',
+                              scheduledDate: fromDate.subtract(Duration(minutes: 10)),
                             );
+                          } else {
+                            NotificationService().notificationsPlugin.cancel(fromDate.hashCode);        
                           }
                         });
                       },

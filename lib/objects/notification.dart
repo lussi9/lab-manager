@@ -1,4 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
   final notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -8,9 +11,13 @@ class NotificationService {
 
   Future<void> initNotification() async {
     if (_isInitialized) return;
+
+    tz.initializeTimeZones(); // Initialize timezone data
+    final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(currentTimeZone)); // Set the local timezone
+
     const AndroidInitializationSettings initializationSettingsAndroid = 
         AndroidInitializationSettings('@mipmap/ic_launcher'); // android initialization settings
-
     const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -42,11 +49,27 @@ class NotificationService {
   }
 
   Future<void> showNotification({int id = 0, String? title, String? body}) async {
-    return notificationsPlugin.show(
+    return notificationsPlugin.show(id, title, body, notificationDetails(),);
+  }
+
+  Future<void> scheduleNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+  }) async {
+    var tzDate = tz.TZDateTime.from(
+      scheduledDate,
+      tz.local, // Use the local timezone
+    );
+    await notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      notificationDetails(),
+      tzDate,
+      const NotificationDetails(),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
+  
   }
 }

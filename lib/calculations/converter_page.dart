@@ -13,7 +13,8 @@ class _ConverterViewState extends State<ConverterView> {
   double? result;
 
   bool isInputValid = true;
-
+  List<String> history = [];
+  
   static const Map<String, Map<String, double>> conversionRates = {
     'Weight': {
       'Tons': 0.001,
@@ -65,6 +66,10 @@ class _ConverterViewState extends State<ConverterView> {
 
     setState(() {
       result = converted;
+      if (history.length >= 30) {
+        history.removeAt(0); // Remove the oldest
+      }
+      history.add('$inputValue $fromUnit = $result $toUnit'); // Add to history
     });
   }
 
@@ -74,6 +79,56 @@ class _ConverterViewState extends State<ConverterView> {
       appBar: AppBar(
         title: const Text('Converter'),
         backgroundColor: Color.fromRGBO(67, 160, 71, 1),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.history, size: 30),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                tooltip: 'History',
+              ),
+            ),
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: Column(
+          children: [
+            const DrawerHeader(
+              child: Center(child: Text('Calculation History', style: TextStyle(fontSize: 20))),
+            ),
+            Expanded(
+              child: history.isEmpty
+                  ? const Center(child: Text('No history yet.'))
+                  : ListView.builder(
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(history[index]),
+                        );
+                      },
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    history.clear();
+                  });
+                  Navigator.pop(context); // Close the drawer
+                },
+                icon: const Icon(Icons.delete),
+                label: const Text('Clear History'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

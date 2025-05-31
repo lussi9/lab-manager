@@ -47,7 +47,7 @@ class _AccountPageState extends State<AccountPage> {
             ),
             Text(
               user?.email ?? '',
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey, fontSize: 16),
             ),
             const SizedBox(height: 20),
             Card(
@@ -81,7 +81,7 @@ class _AccountPageState extends State<AccountPage> {
         children: [
           ListTile(
             leading: Icon(icon, color: title == ("Delete Account")? Colors.red : Color.fromRGBO(67, 160, 71, 1)),
-            title: Text(title),
+            title: Text(title, style: TextStyle(fontSize: 18),),
             onTap: onTap,
           ),
         ],

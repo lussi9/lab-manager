@@ -13,6 +13,8 @@ class CalculatorPageState extends State<CalculatorPage> {
   var userInput = '';
   var result = '0';
   int parenthesesCount = 0;
+  List<String> history = [];
+
   @override
   Widget build(BuildContext context) {
     List<String> buttons = [
@@ -27,10 +29,60 @@ class CalculatorPageState extends State<CalculatorPage> {
       appBar: AppBar(
         title: const Text('Calculator'),
         backgroundColor: Color.fromRGBO(67, 160, 71, 1),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.history, size: 30),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                tooltip: 'History',
+              ),
+            ),
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: Column(
+          children: [
+            const DrawerHeader(
+              child: Center(child: Text('Calculation History', style: TextStyle(fontSize: 20))),
+            ),
+            Expanded(
+              child: history.isEmpty
+                  ? const Center(child: Text('No history yet.'))
+                  : ListView.builder(
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(history[index]),
+                        );
+                      },
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    history.clear();
+                  });
+                  Navigator.pop(context); // Close the drawer
+                },
+                icon: const Icon(Icons.delete),
+                label: const Text('Clear History'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000, maxHeight: 700),
+          constraints: const BoxConstraints(maxWidth: 800, maxHeight: 700),
           child: Column(
             children: [
               Expanded(
@@ -60,9 +112,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                   builder: (context, constraints) {
                     double width = constraints.maxWidth;
                     double height = constraints.maxHeight - 20;
-
                     int columns = 4;
-
                     double spacing = 3;
                     double itemWidth = (width - spacing * (columns - 1)) / columns;
                     double itemHeight = height / 5; // Total rows = 5
@@ -97,6 +147,11 @@ class CalculatorPageState extends State<CalculatorPage> {
                           buttonText: buttons[index],
                           color: Colors.grey[600],
                           textColor: Colors.white,
+                          buttonTapped: (){
+                            setState(() {
+                              userInput += buttons[index];
+                            });
+                          },
                         );
                       }
 
@@ -206,6 +261,10 @@ class CalculatorPageState extends State<CalculatorPage> {
 
       setState(() {
         result = eval.toString(); // Display the result
+        if (history.length >= 30) {
+          history.removeAt(0); // Remove the oldest
+        }
+        history.add('$finalUserInput = $result'); // Add to history
       });
     } catch (e) {
       setState(() {
