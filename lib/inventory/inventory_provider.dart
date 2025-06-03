@@ -23,54 +23,42 @@ class InventoryProvider extends ChangeNotifier {
   String selectedOrder = "name";
 
   Future<void> addFungible(String folderId, Fungible fungible) async {
-    try {
-      final docRef =
-      await FirebaseFirestore.instance.collection('users').doc(userId)
-      .collection('folders').doc(folderId).collection('fungibles').add(fungible.toJson());
+    final docRef =
+    await FirebaseFirestore.instance.collection('users').doc(userId)
+    .collection('folders').doc(folderId).collection('fungibles').add(fungible.toJson());
 
-      final newFungible = Fungible(
-          documentId: docRef.id,
-          name: fungible.name,
-          description: fungible.description,
-          quantity: fungible.quantity);
+    final newFungible = Fungible(
+        documentId: docRef.id,
+        name: fungible.name,
+        description: fungible.description,
+        quantity: fungible.quantity);
 
-      folderFungibles.putIfAbsent(folderId, () => []);
-      folderFungibles[folderId]!.add(newFungible);
+    folderFungibles.putIfAbsent(folderId, () => []);
+    folderFungibles[folderId]!.add(newFungible);
 
-      orderList(folderId);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding Fungible: $e');
-    }
+    orderList(folderId);
+    notifyListeners();
   }
 
   Future<void> deleteFungible(String folderId, Fungible fungible) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
-        .collection('folders').doc(folderId)
-        .collection('fungibles').doc(fungible.documentId).delete();
-      
-      folderFungibles[folderId]?.remove(fungible);
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting Fungible: $e');
-    }
+    await FirebaseFirestore.instance.collection('users').doc(userId)
+      .collection('folders').doc(folderId)
+      .collection('fungibles').doc(fungible.documentId).delete();
+    
+    folderFungibles[folderId]?.remove(fungible);
+    notifyListeners();
   }
 
   Future<void> updateFungible(String folderId, Fungible fungible) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
-        .collection('folders').doc(folderId)
-        .collection('fungibles').doc(fungible.documentId).update(fungible.toJson());
+    await FirebaseFirestore.instance.collection('users').doc(userId)
+      .collection('folders').doc(folderId)
+      .collection('fungibles').doc(fungible.documentId).update(fungible.toJson());
 
-      final index = folderFungibles[folderId]?.indexWhere((f) => f.documentId == fungible.documentId);
-      if (index != null && index >= 0) {
-        folderFungibles[folderId]![index] = fungible;
-      }
-      notifyListeners();
-    } catch (e) {
-      print('Error updating Fungible: $e');
+    final index = folderFungibles[folderId]?.indexWhere((f) => f.documentId == fungible.documentId);
+    if (index != null && index >= 0) {
+      folderFungibles[folderId]![index] = fungible;
     }
+    notifyListeners();
   }
 
   Future<void> loadFungibles(String folderId) async {
@@ -104,52 +92,40 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> addFolder(Folder folder) async {
-    try {
-      final docRef = await FirebaseFirestore.instance.collection('users').doc(userId)
-      .collection('folders').add(folder.toJson());
-            final newFolder = Folder(
-        documentId: docRef.id,
-        name: folder.name,
-        fungibles: folder.fungibles,
-      );
-      _folders.add(newFolder);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding Folder: $e');
-    }
+    final docRef = await FirebaseFirestore.instance.collection('users').doc(userId)
+    .collection('folders').add(folder.toJson());
+          final newFolder = Folder(
+      documentId: docRef.id,
+      name: folder.name,
+      fungibles: folder.fungibles,
+    );
+    _folders.add(newFolder);
+    notifyListeners();
   }
 
   Future<void> updateFolder(Folder folder, String folderName) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId)
-      .collection('folders').doc(folder.documentId).update({
-        'name': folderName,
-      });
+    await FirebaseFirestore.instance.collection('users').doc(userId)
+    .collection('folders').doc(folder.documentId).update({
+      'name': folderName,
+    });
 
-      final index = _folders.indexWhere((f) => f.documentId == folder.documentId);
-      if (index != -1) {
-        _folders[index].name = folderName;
-      }
-      notifyListeners();
-    } catch (e) {
-      print('Error updating Folder: $e');
+    final index = _folders.indexWhere((f) => f.documentId == folder.documentId);
+    if (index != -1) {
+      _folders[index].name = folderName;
     }
+    notifyListeners();
   }
     
   Future<void> deleteFolder(Folder folder) async {
-    try {
-      final folderRef = FirebaseFirestore.instance
-          .collection('users').doc(userId)
-          .collection('folders').doc(folder.documentId);
+    final folderRef = FirebaseFirestore.instance
+        .collection('users').doc(userId)
+        .collection('folders').doc(folder.documentId);
 
-      await folderRef.delete();
-      _folders.removeWhere((f) => f.documentId == folder.documentId);
-      folderFungibles.remove(folder.documentId);
+    await folderRef.delete();
+    _folders.removeWhere((f) => f.documentId == folder.documentId);
+    folderFungibles.remove(folder.documentId);
 
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting Folder: $e');
-    }
+    notifyListeners();
   }
 
   Future<void> loadFolders() async {
@@ -168,30 +144,25 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> loadAll() async {
-    try {
-      final foldersData = await FirebaseFirestore.instance.collection('users').doc(userId)
-      .collection('folders').get();
+    final foldersData = await FirebaseFirestore.instance.collection('users').doc(userId)
+    .collection('folders').get();
 
-      _folders.clear();
-      folderFungibles.clear();
+    _folders.clear();
+    folderFungibles.clear();
 
-      for (var doc in foldersData.docs) {
-        final folder = Folder.fromJson(doc.data(), doc.id);
-        _folders.add(folder);
+    for (var doc in foldersData.docs) {
+      final folder = Folder.fromJson(doc.data(), doc.id);
+      _folders.add(folder);
 
-        // Load fungibles for each folder
-        final fungiblesData = await FirebaseFirestore.instance.collection('users').doc(userId)
-            .collection('folders').doc(folder.documentId)
-            .collection('fungibles').get();
+      // Load fungibles for each folder
+      final fungiblesData = await FirebaseFirestore.instance.collection('users').doc(userId)
+          .collection('folders').doc(folder.documentId)
+          .collection('fungibles').get();
 
-        folderFungibles[folder.documentId!] = fungiblesData.docs
-            .map((fungibleDoc) => Fungible.fromJson(fungibleDoc.data(), fungibleDoc.id))
-            .toList();
-      }
-      notifyListeners();
-    } catch (e) {
-      print('Error loading folders and fungibles: $e');
+      folderFungibles[folder.documentId!] = fungiblesData.docs
+          .map((fungibleDoc) => Fungible.fromJson(fungibleDoc.data(), fungibleDoc.id))
+          .toList();
     }
+    notifyListeners();
   }
-
 }

@@ -133,6 +133,7 @@ Future<void> main() async {
 
   NotificationService().initNotification(); // Initialize the notification service
 
+  // Provider initialization
   final eventProvider = EventProvider();
   final entryProvider = EntryProvider();
   final inventoryProvider = InventoryProvider();
@@ -199,13 +200,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   @override
   void initState(){
     super.initState();
+    //Track the currently selected tab
     _tabController = TabController(length: 4, vsync: this, initialIndex: _selectedTabIndex);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         setState(() => _selectedTabIndex = _tabController.index);
       }
     });
-  } //Track the currently selected tab
+  }
 
   @override
   void dispose() {
@@ -217,12 +219,11 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: Text(MyApp.title),
-        //centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              icon: Icon(Icons.person), // User icon
+              icon: Icon(Icons.person),
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -239,7 +240,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           Expanded(
             child:TabBarView(
               controller: _tabController,
-              children: [
+              children: [ // The four tabs of the app
                 JournalWidget(),
                 CalendarWidget(),
                 CalculationsWidget(),

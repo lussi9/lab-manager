@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// This widget is used for the buttons in the calculator
 class MyButton extends StatelessWidget {
   final color;
   final textColor;

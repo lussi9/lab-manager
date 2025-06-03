@@ -22,7 +22,7 @@ class EmailVerificationScreen extends StatefulWidget {
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final _auth = FirebaseAuth.instance;
 
-  Future<void> _saveUserData(User user) async {
+  Future<void> _saveUserData(User user) async { // Saves user data to Firestore
     try{
       final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
       await userDoc.set({
@@ -31,8 +31,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         'email': widget.email,
       });
     } catch (e) {
-      print('Error saving user data: $e');
-      print('User id is:' + user.uid);   }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving user data: $e')),
+      );  
+    }
   }
 
   Future<void> _checkEmailVerification() async {
@@ -45,7 +47,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         const SnackBar(content: Text('User registered correctly.')),
       );
       Navigator.of(context)
-          .popUntil((route) => route.isFirst); // Vuelve al inicio
+          .popUntil((route) => route.isFirst); // Returns to the first route
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -61,7 +63,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       appBar: AppBar(
         title: const Text('Email Verification'),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Oculta el botón de retroceso
+        automaticallyImplyLeading: false, // Hides the back button
       ),
       body: Center(
         child: Column(

@@ -6,7 +6,7 @@ import 'package:lab_manager/calendar/event_editing_page.dart';
 import 'package:lab_manager/calendar/event.dart';
 
 class CalendarWidget extends StatefulWidget{
-  const CalendarWidget({Key? key}) : super(key: key);
+  const CalendarWidget({super.key});
 
   @override
   State<CalendarWidget> createState() => CalendarWidgetState();
@@ -35,13 +35,13 @@ class CalendarWidgetState extends State<CalendarWidget>{
         border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
-      firstDayOfWeek: 1, //Lunes primer dia de la semana
-      dataSource: EventDataSource(events), //DataSource para el calendario
-      initialSelectedDate: DateTime.now(), //Fecha seleccionada por defecto
-      allowViewNavigation: true, //Permitir navegar entre vistas
-      showTodayButton: true, //Mostrar boton de hoy
-      showDatePickerButton: true, //Mostrar boton de seleccion de fecha
-      allowedViews: <CalendarView> //Vistas permitidas
+      firstDayOfWeek: 1, // Monday as the first day of the week
+      dataSource: EventDataSource(events), // DataSource for the calendar
+      initialSelectedDate: DateTime.now(), // Default selected date
+      allowViewNavigation: true, // Allow navigation between views
+      showTodayButton: true, // Show today button
+      showDatePickerButton: true, // Show date picker button
+      allowedViews: <CalendarView> // Allowed views for the calendar
         [
           CalendarView.day,
           CalendarView.week,
@@ -51,14 +51,14 @@ class CalendarWidgetState extends State<CalendarWidget>{
         ],
       monthViewSettings: MonthViewSettings(
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-        numberOfWeeksInView: getNumberOfWeeks() //Numero de semanas flexible
+        numberOfWeeksInView: getNumberOfWeeks() // Dynamic number of weeks based on screen height
         ),
       scheduleViewSettings: ScheduleViewSettings(
         appointmentItemHeight: 50),
       appointmentTextStyle: TextStyle(fontSize: 14),
       appointmentTimeTextFormat: 'HH:mm',
       onTap: calendarTapped,
-      onLongPress: (CalendarLongPressDetails details) {
+      onLongPress: (CalendarLongPressDetails details) { // Create new event on long press
         if (details.targetElement == CalendarElement.calendarCell) {
           setState(() {
             Navigator.push<Widget>(
@@ -72,7 +72,7 @@ class CalendarWidgetState extends State<CalendarWidget>{
     );
   }
 
-  void calendarTapped(CalendarTapDetails details) {
+  void calendarTapped(CalendarTapDetails details) { // Navigate to event editing page on tap
     if (details.targetElement == CalendarElement.appointment) {
       setState(() {
         final Event eventDetails = details.appointments![0];

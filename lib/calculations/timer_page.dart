@@ -7,6 +7,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class TimerPage extends StatefulWidget {
+  const TimerPage({super.key});
+
   @override
   TimerPageState createState() => TimerPageState();
 }
@@ -27,7 +29,8 @@ class TimerPageState extends State<TimerPage> {
           SizedBox(height: 20),
           ElevatedButton(onPressed: _addTimer,
             child: Text("Add Timer")),
-          SizedBox(height: 20),          Expanded(
+          SizedBox(height: 20),          
+          Expanded(
             child: Consumer<TimerProvider>(
               builder: (context, provider, _){
               return ListView.builder(
@@ -56,11 +59,11 @@ class TimerPageState extends State<TimerPage> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
+                        IconButton( // Start/Pause button
                           icon: Icon(t.isRunning ? Icons.pause : Icons.play_arrow, color: Color(0xff005a4e)),
                           onPressed: () => provider.startPauseTimer(t),
                         ),
-                        IconButton(
+                        IconButton( // Reset button
                           icon: Icon(Icons.restore, color: Color(0xff005a4e),),
                           onPressed: () => provider.resetTimer(t),
                         ),
@@ -78,6 +81,7 @@ class TimerPageState extends State<TimerPage> {
     );
   }
 
+  /// Builds the timer picker based on the platform.
   Widget _buildPlatformTimerPicker() {
     if (kIsWeb) {
       // Web: Custom pickers for hours, minutes, seconds

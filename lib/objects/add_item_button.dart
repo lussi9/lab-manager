@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// This widget is used to display an "Add Item" button in the inventory
 class AddItem extends StatelessWidget {
   final VoidCallback onPressed;
   AddItem({required this.onPressed});

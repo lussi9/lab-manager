@@ -27,8 +27,8 @@ class _AuthUserPageState extends State<AuthUserPage> {
           children: [
             const SizedBox(height: 20),
             Image.asset(
-              'assets/logoNoBG400.png', // Replace with your image path
-              height: 360, // Adjust as needed
+              'assets/logoNoBG400.png', // Path to the logo image
+              height: 360,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -50,7 +50,7 @@ class _AuthUserPageState extends State<AuthUserPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => RegisterScreen(),
+                    builder: (context) => RegisterScreen(), // Navigate to register screen
                   ),
                 );
               },

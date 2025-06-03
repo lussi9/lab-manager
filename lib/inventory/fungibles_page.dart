@@ -8,7 +8,6 @@ import 'package:lab_manager/inventory/inventory_provider.dart';
 
 class FungiblesPage extends StatefulWidget {
   final Folder folder;
-
   const FungiblesPage({super.key, required this.folder});
 
   @override
@@ -16,6 +15,7 @@ class FungiblesPage extends StatefulWidget {
 }
 
 class FungiblesPageState extends State<FungiblesPage> {
+
   @override
   void initState(){
     super.initState();
@@ -45,7 +45,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                       Provider.of<InventoryProvider>(context, listen: false).setOrder(value!, widget.folder.documentId!);
                     });
                   },
-                  items: [
+                  items: [ // Dropdown items for ordering fungibles
                     DropdownMenuItem(
                       value: "name",
                       child: Text("Order by Name", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
@@ -57,7 +57,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                   ],
                   hint: Text("Order List"),
                 ),
-                IconButton(
+                IconButton( // Settings button to change quantity limit
                   icon: Icon(Icons.settings, size: 30,),
                   onPressed: () {
                     showDialog(
@@ -80,7 +80,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                                           icon: Icon(Icons.remove),
                                           onPressed: () {
                                             if (tempLimit > 0) {
-                                              setDialogState(() {
+                                              setDialogState(() { // Set state to update the dialog
                                                 tempLimit--;
                                               });
                                             }
@@ -93,7 +93,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                                         const SizedBox(width: 8),
                                         IconButton(
                                           icon: Icon(Icons.add),
-                                          onPressed: () {
+                                          onPressed: () { // Set state to update the dialog
                                             setDialogState(() {
                                               tempLimit++;
                                             });
@@ -110,7 +110,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                                   child: const Text('Cancel'),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () { // Save the new quantity limit
                                     inventoryProvider.setQuantityLimit(tempLimit);
                                     Navigator.pop(context);
                                   },
@@ -127,10 +127,10 @@ class FungiblesPageState extends State<FungiblesPage> {
               ],
             ),
           ),
-          Expanded(
+          Expanded( 
             child: fungibleList.isEmpty ? 
-            ListView.builder(
-              itemCount: 2,
+            ListView.builder( 
+              itemCount: 1,
               itemBuilder: (context, index){
                 return AddItem(onPressed: () => _showAddFungibleDialog(context));
             })
@@ -198,7 +198,7 @@ class FungiblesPageState extends State<FungiblesPage> {
               children: [
                 IconButton(
                   icon: Icon(Icons.remove, color: Color(0xfff2f2f2)),
-                  onPressed: () async {
+                  onPressed: () async { // Decrease the quantity of the fungible
                     if (fungible.quantity > 0) {
                       inventoryProvider.updateFungible(
                         widget.folder.documentId!,
@@ -226,7 +226,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                 SizedBox(width: 8),
                 IconButton(
                   icon: Icon(Icons.add, color: Color(0xfff2f2f2),),
-                  onPressed: () async {
+                  onPressed: () async { // Increase the quantity of the fungible
                     inventoryProvider.updateFungible(
                       widget.folder.documentId!,
                       Fungible(

@@ -30,7 +30,7 @@ class TimerProvider extends ChangeNotifier {
       timerModel.timer = Timer.periodic(Duration(seconds: 1), (_) {
         if (timerModel.remaining.inSeconds > 0) {
           timerModel.remaining -= Duration(seconds: 1);
-        } else {
+        } else { // Timer finished actions
           timerModel.timer?.cancel();
           timerModel.isRunning = false;
           _player.play(AssetSource('alarm.mp3'));

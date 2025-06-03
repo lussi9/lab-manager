@@ -7,17 +7,16 @@ import 'event_provider.dart';
 
 class EventEditingPage extends StatefulWidget{
   final Event? selectedEvent;
-
-  EventEditingPage({
-    Key? key,
+  const EventEditingPage({
+    super.key,
     this.selectedEvent,
-  }) : super(key: key);
+  });
 
   @override
-  _EventEditingPageState createState() => _EventEditingPageState();
+  EventEditingPageState createState() => EventEditingPageState();
 }
 
-class _EventEditingPageState extends State<EventEditingPage>{
+class EventEditingPageState extends State<EventEditingPage>{
   final _formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final descController = TextEditingController();
@@ -26,7 +25,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
   bool _isAllDay = false;
   bool _receiveNotification = false;
 
-  final List<Color> _colorCollection = [
+  final List<Color> _colorCollection = [ // Collection of colors for event background
     Colors.red,
     Colors.orange,
     Color.fromRGBO(67, 160, 71, 1),
@@ -47,10 +46,10 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   void initState(){
     super.initState();
-    if(widget.selectedEvent == null){
+    if(widget.selectedEvent == null){ // If creating a new event initialize with current time
       fromDate = DateTime.now();
       toDate = DateTime.now().add(Duration(hours: 2));
-    } else{
+    } else{ // Otherwise, initialize with selected event details
       final event = widget.selectedEvent!;
       titleController.text = event.title;
       descController.text = event.description;
@@ -63,7 +62,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
       (color) => color.value == event.background.value
     );
     if (existingColorIndex != -1) {
-      _selectedColorIndex = existingColorIndex; // <-- Fix for incorrect color
+      _selectedColorIndex = existingColorIndex;
     }
     }
   }
@@ -202,7 +201,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
               title: Text(
                 _colorNames[_selectedColorIndex],
               ),
-              onTap: () {
+              onTap: () { // Custom color picker dialog
                 showDialog<Widget>(
                   context: context,
                   barrierDismissible: true,
@@ -297,7 +296,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
     ),
     floatingActionButton: widget.selectedEvent == null
     ? const Text(''): FloatingActionButton(
-      onPressed: () {
+      onPressed: () { // Delete event action
         final provider = Provider.of<EventProvider>(context, listen: false);
         if (widget.selectedEvent != null) {
           provider.deleteEvent(widget.selectedEvent!);

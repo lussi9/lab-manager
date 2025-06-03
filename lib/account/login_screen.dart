@@ -1,15 +1,17 @@
-import 'package:lab_manager/account/resetPassword.dart';
+import 'package:lab_manager/account/reset_password.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lab_manager/main.dart';
 
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -17,16 +19,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loginUser() async {
     try {
+      // Attempts to sign in the user with email and password
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
-      );
+      ); 
 
       User? user = userCredential.user;
 
       if (user != null) {
         if (user.emailVerified) {
-          Navigator.of(context).pushAndRemoveUntil(
+          Navigator.of(context).pushAndRemoveUntil( // Navigate to the main page
             MaterialPageRoute(
               builder: (context) => MainPage(),
             ),
@@ -35,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Por favor, verifica tu correo electrónico'),
+              content: Text('Please verify your email address before signing in.'),
             ),
           );
           await _auth.signOut();
@@ -43,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.message}')),
+        SnackBar(content: Text('Error signing in: ${e.message}')),
       );
     }
   }

@@ -29,7 +29,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
       children: [
         Expanded(
           child: folders.isEmpty
-            ? ListView.builder(
+            ? ListView.builder( // If no folders, show a message and an Add Item button
                 itemCount: 1,
                 itemBuilder: (context, index){
                   return AddItem(onPressed: () => _showAddFolderDialog(context));
@@ -132,7 +132,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
                 if (folder == null) {
                   provider.addFolder(Folder(name: folderName));
                 } else {
-                  provider.updateFolder(folder, folderName); // You need to implement this method
+                  provider.updateFolder(folder, folderName);
                 }
                 Navigator.pop(context);
               }

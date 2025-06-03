@@ -10,7 +10,7 @@ class CalculationsWidget extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        children: <Widget>[ // Each widget expands to fill the available space
           Expanded(
           flex: 1,
           child: Card(

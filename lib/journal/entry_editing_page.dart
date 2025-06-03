@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:lab_manager/journal/entry_provider.dart';
 
 class EntryEditingPage extends StatefulWidget {
-  final Entry? entry; // Optional existing entry
+  final Entry? entry; // Existing entry to edit, or null for a new entry
 
-    const EntryEditingPage({
-    Key? key,
+  const EntryEditingPage({
+    super.key,
     this.entry,
-  }) : super(key: key);
+  });
 
   @override
   State<EntryEditingPage> createState() => _EntryEditingPageState();

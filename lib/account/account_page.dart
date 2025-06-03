@@ -17,7 +17,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchUserData(); // fetches the user data from firestore
   }
 
   Future<void> _fetchUserData() async {
@@ -86,11 +86,11 @@ class _AccountPageState extends State<AccountPage> {
         content: Text('Are you sure you want to sign out?', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false), // Cancel
+            onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true), // Confirm
+            onPressed: () => Navigator.pop(context, true), // Sign out confirmation
             child: const Text('Sign out'),
           ),
         ],
@@ -101,7 +101,7 @@ class _AccountPageState extends State<AccountPage> {
       try {
         await _auth.signOut();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AuthUserPage()),
+          MaterialPageRoute(builder: (context) => const AuthUserPage()), // Navigates to initial page
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -112,107 +112,107 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   void _showChangePasswordDialog() {
-  final _formKey = GlobalKey<FormState>();
-  String oldPassword = '';
-  String newPassword = '';
-  bool isOldPassVisible = false;
-  bool isNewPassVisible = false;
+    final _formKey = GlobalKey<FormState>();
+    String oldPassword = '';
+    String newPassword = '';
+    bool isOldPassVisible = false;
+    bool isNewPassVisible = false;
 
-  showDialog(
-    context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-      title: const Text('Change Password'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  obscureText: !isOldPassVisible,
-                  decoration: InputDecoration(
-                    hintText: 'Old Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isOldPassVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+        title: const Text('Change Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    obscureText: !isOldPassVisible,
+                    decoration: InputDecoration(
+                      hintText: 'Old Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isOldPassVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isOldPassVisible = !isOldPassVisible; // Toggle visibility
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          isOldPassVisible = !isOldPassVisible; // Toggle visibility
-                        });
-                      },
                     ),
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Enter your old password' : null,
+                    onChanged: (value) => oldPassword = value,
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter your old password' : null,
-                  onChanged: (value) => oldPassword = value,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  obscureText: !isNewPassVisible,
-                  decoration: InputDecoration(
-                    hintText: 'New Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isNewPassVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    obscureText: !isNewPassVisible,
+                    decoration: InputDecoration(
+                      hintText: 'New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isNewPassVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isNewPassVisible = !isNewPassVisible; // Toggle visibility
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          isNewPassVisible = !isNewPassVisible; // Toggle visibility
-                        });
-                      },
                     ),
+                    validator: (value) =>
+                        value == null || value.length < 6 ? 'Enter at least 6 characters' : null,
+                    onChanged: (value) => newPassword = value,
                   ),
-                  validator: (value) =>
-                      value == null || value.length < 6 ? 'Enter at least 6 characters' : null,
-                  onChanged: (value) => newPassword = value,
-                ),
-              ],
+                ],
+              ),
             ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                try {
+                  // User reauthentication with old password
+                  final user = _auth.currentUser!;
+                  final credential = EmailAuthProvider.credential(
+                    email: user.email!,
+                    password: oldPassword,
+                  );
+                  await user.reauthenticateWithCredential(credential);
+
+                  // Update the password
+                  await user.updatePassword(newPassword);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password changed successfully')),
+                  );
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: ${e.toString()}')),
+                  );
+                }
+              }
+            },
+            child: const Text('Change'),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              try {
-                // Re-authenticate the user with the old password
-                final user = _auth.currentUser!;
-                final credential = EmailAuthProvider.credential(
-                  email: user.email!,
-                  password: oldPassword,
-                );
-                await user.reauthenticateWithCredential(credential);
-
-                // Update the password
-                await user.updatePassword(newPassword);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password changed successfully')),
-                );
-              } catch (e) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: ${e.toString()}')),
-                );
-              }
-            }
-          },
-          child: const Text('Change'),
-        ),
-      ],
-    ),
     ),
   );
 }
@@ -243,7 +243,6 @@ Future<void> _showDeleteAccountDialog() async {
   if (confirm == true) {
     try {
       final user = FirebaseAuth.instance.currentUser;
-
       // Prompt user for password
       final passwordController = TextEditingController();
       final reauth = await showDialog<bool>(
@@ -276,10 +275,9 @@ Future<void> _showDeleteAccountDialog() async {
       final email = user?.email;
       final password = passwordController.text;
       final userId = user?.uid;
-
       final credential = EmailAuthProvider.credential(email: email!, password: password);
 
-      // Reauthenticate
+      // User reauthentication
       await user!.reauthenticateWithCredential(credential);
 
       final userDocRef = FirebaseFirestore.instance.collection('users').doc(userId);
@@ -306,13 +304,13 @@ Future<void> _showDeleteAccountDialog() async {
         await folder.reference.delete();
       }
 
-      // Optionally delete the user document itself
+      // Delete user document
       await userDocRef.delete();
 
       // Delete account
       await user.delete();
 
-      // Navigate to login
+      // Navigate to initial page
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const AuthUserPage()),
       );

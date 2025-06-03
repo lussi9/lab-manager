@@ -4,11 +4,13 @@ import 'package:lab_manager/calculations/calculations_provider.dart';
 import 'package:provider/provider.dart';
 
 class ConverterView extends StatefulWidget {
+  const ConverterView({super.key});
+
   @override
-  _ConverterViewState createState() => _ConverterViewState();
+  ConverterViewState createState() => ConverterViewState();
 }
 
-class _ConverterViewState extends State<ConverterView> {
+class ConverterViewState extends State<ConverterView> {
   String? selectedCategory;
   String? fromUnit;
   String? toUnit;
@@ -18,6 +20,7 @@ class _ConverterViewState extends State<ConverterView> {
   bool isInputValid = true;
   List<String> history = [];
   
+  // Conversion rates for different measurement categories
   static const Map<String, Map<String, double>> conversionRates = {
     'Weight': {
       'Tons': 0.001,
@@ -63,8 +66,9 @@ class _ConverterViewState extends State<ConverterView> {
   void convert() {
     if (fromUnit == null || toUnit == null || inputValue == null) return;
 
+    // Conversion logic
     final rates = conversionRates[selectedCategory!]!;
-    final double baseValue = inputValue! / rates[fromUnit]!;
+    final double baseValue = inputValue! / rates[fromUnit]!; 
     final double converted = baseValue * rates[toUnit]!;
 
     setState(() {

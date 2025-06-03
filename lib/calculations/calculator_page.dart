@@ -26,7 +26,7 @@ class CalculatorPageState extends State<CalculatorPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> buttons = [
+    List<String> buttons = [ // Buttons for the calculator
       'C/AC', '√', '%', '/', 
       '7', '8', '9', 'x',
       '4', '5', '6', '-',
@@ -50,7 +50,7 @@ class CalculatorPageState extends State<CalculatorPage> {
           ),
         ],
       ),
-      endDrawer: Drawer(
+      endDrawer: Drawer( // Drawer for the history
         child: Column(
           children: [
             const DrawerHeader(
@@ -76,7 +76,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                   setState(() {
                     history.clear();
                   });
-                  Navigator.pop(context); // Close the drawer
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.delete),
                 label: const Text('Clear History'),
@@ -90,7 +90,7 @@ class CalculatorPageState extends State<CalculatorPage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800, maxHeight: 700),
+          constraints: const BoxConstraints(maxWidth: 800, maxHeight: 700), // Set maximum width and height for the calculator
           child: Column(
             children: [
               Expanded(
@@ -124,12 +124,13 @@ class CalculatorPageState extends State<CalculatorPage> {
                 flex: 8,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    // Calculate the width and height of each button based on the available space
                     double width = constraints.maxWidth;
                     double height = constraints.maxHeight - 20;
                     int columns = 4;
                     double spacing = 3;
                     double itemWidth = (width - spacing * (columns - 1)) / columns;
-                    double itemHeight = height / 5; // Total rows = 5
+                    double itemHeight = height / 5;
                     double aspectRatio = itemWidth / itemHeight;
 
                     return GridView.builder(
@@ -144,11 +145,13 @@ class CalculatorPageState extends State<CalculatorPage> {
                           textColor: Colors.white,
                           buttonTapped: () {
                             setState(() {
+                              // Delete last character
                               userInput = userInput.substring(0, userInput.length - 1);
                             });
                           },
                           longPress: () {
                             setState(() {
+                              // Clear all input and result
                               userInput = '';
                               result = '0';
                             });
@@ -194,7 +197,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                               } else {
                                 userInput += ')';
                               }
-                              parenthesesCount++;
+                              parenthesesCount++; // Keep track of parentheses
                             });
                           }
                         );
@@ -271,14 +274,14 @@ class CalculatorPageState extends State<CalculatorPage> {
       GrammarParser p = GrammarParser();
       Expression exp = p.parse(finalUserInput);
       ContextModel cm = ContextModel();
-      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      double eval = exp.evaluate(EvaluationType.REAL, cm); // Parse and evaluate the expression
 
       setState(() {
         result = eval.toString(); // Display the result
         if (history.length >= 30) {
           history.removeAt(0); // Remove the oldest
         }
-        history.add('$finalUserInput = $result'); // Add to history
+        history.add('$finalUserInput = $result'); 
       });
       Provider.of<CalculationsProvider>(context, listen: false).addCalculation(Calculation(calc: '$finalUserInput = $result'));
     } catch (e) {

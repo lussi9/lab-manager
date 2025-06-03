@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,28 +16,27 @@ class NotificationService {
     if (_isInitialized) return;
 
     if (!await _requestNotificationPermission()) {
-      print('Notification permissions not granted');
       return;
     }
 
     try {
       tz.initializeTimeZones();
       final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
-      print('Current timezone: $currentTimeZone'); // Debug log
       tz.setLocalLocation(tz.getLocation(currentTimeZone));
     } catch (e) {
-      print('Error setting timezone: $e');
-      tz.setLocalLocation(tz.getLocation('UTC')); // Fallback to UTC
+      tz.setLocalLocation(tz.getLocation('UTC'));
     }
 
+    // Android initialization settings
     const AndroidInitializationSettings initializationSettingsAndroid = 
-        AndroidInitializationSettings('@mipmap/ic_launcher'); // android initialization settings
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    // iOS initialization settings
     const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
-      ); // iOS initialization settings
+      ); 
 
     const initSettings = InitializationSettings(
       android: initializationSettingsAndroid,
@@ -74,7 +72,6 @@ class NotificationService {
     required DateTime scheduledDate,
   }) async {
     if (!await _requestExactAlarmPermission()) {
-      print('Exact alarm permission not granted');
       return;
     }
 
@@ -82,7 +79,6 @@ class NotificationService {
       scheduledDate,
       tz.local, // Use the local timezone
     );
-    print('Scheduling notification for $tzDate with ID: $id, Title: $title');
     await notificationsPlugin.zonedSchedule(
       id,
       title,

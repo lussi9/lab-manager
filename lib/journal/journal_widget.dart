@@ -29,6 +29,7 @@ class JournalWidgetState extends State<JournalWidget> {
     });
   }
 
+  // Filters the list of entries based on the search query.
   List<Entry> getFilteredEntries(List<Entry> entries) {
     if (_searchQuery.isEmpty) return entries;
     return entries
@@ -39,7 +40,7 @@ class JournalWidgetState extends State<JournalWidget> {
 
   @override
 Widget build(BuildContext context) {
-  final entries = Provider.of<EntryProvider>(context).entries; // Nullable
+  final entries = Provider.of<EntryProvider>(context).entries;
   final filteredEntries = getFilteredEntries(entries);
 
   return Scaffold(

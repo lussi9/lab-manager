@@ -4,9 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ResetPasswordRequestScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
 
+  ResetPasswordRequestScreen({super.key});
+
   Future<void> _sendPasswordResetEmail(BuildContext context) async {
     final email = _emailController.text.trim();
-
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -15,22 +16,20 @@ class ResetPasswordRequestScreen extends StatelessWidget {
       return;
     }
 
-    try {
-      // Enviar correo de restablecimiento de contraseña
+    try { // Attempt to send a password reset email
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Email sent'),
           content: const Text(
-              'An email has been sent to reset your password. Please check your inbox and follow the instructions.'),
+              'An email has been sent to reset your password. Please check your inbox and follow the instructions.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xff005a4e))),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pop(
-                    context); // Volver a la pantalla de inicio de sesión
               },
               child: const Text('Accept'),
             ),
@@ -89,7 +88,7 @@ class ResetPasswordRequestScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => _sendPasswordResetEmail(context),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50), // Botón ancho
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text('Send'),
                 ),

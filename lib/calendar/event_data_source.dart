@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:lab_manager/calendar/event.dart';
 import 'package:flutter/material.dart';
 
+// Data source for the calendar, providing event data to the calendar widget.
 class EventDataSource extends CalendarDataSource{
   EventDataSource(List<Event> events){
     appointments = events;

@@ -14,34 +14,10 @@ class CalculationsProvider extends ChangeNotifier {
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> addCalculation(Calculation c) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('calculations').add(c.toJson());
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('calculations').add(c.toJson());
 
-      _calculations.add(c);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding event: $e');
-    }
-  }
-
-  Future<void> clearHistory(String type) async {
-    try {
-      final data = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection(type)
-        .get();
-
-      WriteBatch batch = FirebaseFirestore.instance.batch();
-      for (var doc in data.docs) {
-        batch.delete(doc.reference);
-      }
-
-      await batch.commit();
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting event: $e');
-    }
+    _calculations.add(c);
+    notifyListeners();
   }
 
   Future<void> loadCalculations() async {
@@ -57,14 +33,10 @@ class CalculationsProvider extends ChangeNotifier {
   }
 
   Future<void> addConversion(Calculation c) async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('conversions').add(c.toJson());
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('conversions').add(c.toJson());
 
-      _calculations.add(c);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding event: $e');
-    }
+    _calculations.add(c);
+    notifyListeners();
   }
 
   Future<void> loadConversions() async {
@@ -76,6 +48,23 @@ class CalculationsProvider extends ChangeNotifier {
       _conversions.add(Calculation.fromJson(doc.data(), doc.id));
     }
 
+    notifyListeners();
+  }
+
+  // Deletes history of calculations or conversions
+  Future<void> clearHistory(String type) async {
+    final data = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection(type)
+      .get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    for (var doc in data.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
     notifyListeners();
   }
 }

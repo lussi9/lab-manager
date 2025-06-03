@@ -16,6 +16,7 @@ class EventProvider extends ChangeNotifier {
 
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
+  // Fetch events and listen to changes
   Stream<List<Event>> get eventStream {
     return FirebaseFirestore.instance
       .collection('users')
@@ -26,62 +27,49 @@ class EventProvider extends ChangeNotifier {
   }
 
   Future<void> addEvent(Event event) async {
-    try {
-      final docRef = await FirebaseFirestore.instance.collection('users').doc(userId).collection('events').add(event.toJson());
-      final newEvent = Event(
-      documentId: docRef.id,
-      title: event.title,
-      description: event.description,
-      from: event.from,
-      to: event.to,
-      background: event.background,
-      isAllDay: event.isAllDay,
-      notification: event.notification,);
+    final docRef = await FirebaseFirestore.instance.collection('users').doc(userId).collection('events').add(event.toJson());
+    final newEvent = Event(
+    documentId: docRef.id,
+    title: event.title,
+    description: event.description,
+    from: event.from,
+    to: event.to,
+    background: event.background,
+    isAllDay: event.isAllDay,
+    notification: event.notification,);
 
-      _events.add(newEvent);
-      notifyListeners();
-          
-    } catch (e) {
-      print('Error adding event: $e');
-    }
+    _events.add(newEvent);
+    notifyListeners();
   }
 
   Future<void> deleteEvent(Event event) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('events')
-          .doc(event.documentId)
-          .delete();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('events')
+        .doc(event.documentId)
+        .delete();
 
-      _events.removeWhere((e) => e.documentId == event.documentId);
-      
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting event: $e');
-    }
+    _events.removeWhere((e) => e.documentId == event.documentId);
+    
+    notifyListeners();
   }
 
   Future<void> editEvent(Event oldEvent, Event newEvent) async {
-    try {
-      if (oldEvent.documentId == null) {
-        throw Exception('Event ID is null');
-      }
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('events')
-          .doc(oldEvent.documentId)
-          .update(newEvent.toJson());
-      
-      final index = _events.indexWhere((event) => event.documentId == oldEvent.documentId);
-      if (index != -1) {
-        _events[index] = newEvent;
-      }
-      notifyListeners();
-    } catch (e) {
-      print('Error editing event: $e');
+    if (oldEvent.documentId == null) {
+      throw Exception('Event ID is null');
     }
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('events')
+        .doc(oldEvent.documentId)
+        .update(newEvent.toJson());
+    
+    final index = _events.indexWhere((event) => event.documentId == oldEvent.documentId);
+    if (index != -1) {
+      _events[index] = newEvent;
+    }
+    notifyListeners();
   }
 }
