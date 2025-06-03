@@ -36,11 +36,11 @@ dependencies:
 
   syncfusion_flutter_calendar: ^29.1.37 # calendar widget
   intl: ^0.19.0 # handle dates
-  cupertino_icons: ^1.0.2 # iOS style icons
   math_expressions: ^2.0.1 # for parsing and evaluating mathematical expressions
   timezone: ^0.10.0 # timezone support
   audioplayers: ^6.4.0 # audio playback
   flutter_slidable: ^4.0.0 # for swipeable list items
+  google_fonts: ^6.2.1
 
   #state management
   provider: ^6.1.4
@@ -49,6 +49,7 @@ dependencies:
   firebase_auth: ^5.5.3
   flutter_timezone: ^4.1.1
   flutter_local_notifications: ^19.2.1
+  permission_handler: ^12.0.0
 
 dev_dependencies:
   flutter_test:
@@ -60,8 +61,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-
   flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.3.1
+
+flutter_native_splash:
+  background_image: assets/background.png # splash screen image
+  branding: assets/logoNoBG.png # logo for the splash screen
+  branding_mode: "center" # logo position
 
 flutter_icons:
   android: true
@@ -85,6 +91,11 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/alarm.mp3
+    - assets/logoNoBG.png
+    - assets/logoNoBG400.png
+    - assets/lab_panel_gris.png
+    - assets/lab_panel_verde.png
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

@@ -14,42 +14,55 @@ class _AuthUserPageState extends State<AuthUserPage> {
   @override
   Widget build(BuildContext context) { 
     return Scaffold(
-      body: Center(
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed:  () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => LoginScreen(), // Navigate to login screen
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-              minimumSize: const Size(180, 60),
-            ),
-            child: const Text('Sign in', style: TextStyle(fontSize: 22, color: Colors.white),),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF005a4e), Color(0xFF92e086)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RegisterScreen(),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-              minimumSize: const Size(180, 60),
+        ),
+        child: Center(
+          child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Image.asset(
+              'assets/logoNoBG400.png', // Replace with your image path
+              height: 360, // Adjust as needed
             ),
-            child: const Text('Register', style: TextStyle(fontSize: 22, color: Colors.white)),
-          ),
-        ],
-      ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed:  () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(), // Navigate to login screen
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(180, 70),
+                backgroundColor: Color(0xFFEDEDED),
+              ),
+              child: Text('Sign in', style: TextStyle(color: Color(0xFF005a4e))),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => RegisterScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(180, 70),
+                backgroundColor: Color(0xFFEDEDED),
+              ),
+              child: Text('Register', style: TextStyle(color: Color(0xFF005a4e))),
+            ),
+          ],
+        ),
+        ),
       ),
     );
   }

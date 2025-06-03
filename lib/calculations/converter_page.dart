@@ -78,7 +78,6 @@ class _ConverterViewState extends State<ConverterView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Converter'),
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -96,7 +95,7 @@ class _ConverterViewState extends State<ConverterView> {
         child: Column(
           children: [
             const DrawerHeader(
-              child: Center(child: Text('Calculation History', style: TextStyle(fontSize: 20))),
+              child: Center(child: Text('Calculation History')),
             ),
             Expanded(
               child: history.isEmpty
@@ -105,7 +104,7 @@ class _ConverterViewState extends State<ConverterView> {
                       itemCount: history.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text(history[index]),
+                          title: Text(history[index], style: TextStyle(fontSize: 20),),
                         );
                       },
                     ),
@@ -119,11 +118,10 @@ class _ConverterViewState extends State<ConverterView> {
                   });
                   Navigator.pop(context); // Close the drawer
                 },
-                icon: const Icon(Icons.delete),
+                icon: Icon(Icons.delete),
                 label: const Text('Clear History'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
                 ),
               ),
             )
@@ -137,7 +135,7 @@ class _ConverterViewState extends State<ConverterView> {
             // Dropdown to select the category
             DropdownButton<String>(
               isExpanded: true,
-              hint: Text('Select Category'),
+              hint: Text('Select Category', style: TextStyle(color: Color(0xff005a4e))),
               value: selectedCategory,
               onChanged: (value) {
                 setState(() {
@@ -150,14 +148,14 @@ class _ConverterViewState extends State<ConverterView> {
               },
               items: conversionRates.keys .map((category) => DropdownMenuItem(
                         value: category,
-                        child: Text(category),
+                        child: Text(category, style: TextStyle(color: Color(0xff005a4e))),
                       ))
                   .toList(),
             ),
             SizedBox(height: 20),
             // Dropdown to select the "From Unit"
             DropdownButton<String>(
-              hint: Text('From Unit'),
+              hint: Text('From Unit', style: TextStyle(color: Color(0xff005a4e))),
               value: fromUnit,
               onChanged: (value) {
                 setState(() {
@@ -167,13 +165,13 @@ class _ConverterViewState extends State<ConverterView> {
               },
               items: units.map((unit) => DropdownMenuItem(
                         value: unit,
-                        child: Text(unit),
+                        child: Text(unit, style: TextStyle(color: Color(0xff005a4e))),
                       ))
                   .toList(),
             ),
             // Dropdown to select the "To Unit"
             DropdownButton<String>(
-              hint: Text('To Unit'),
+              hint: Text('To Unit', style: TextStyle(color: Color(0xff005a4e))),
               value: toUnit,
               onChanged: (value) {
                 setState(() {
@@ -183,7 +181,7 @@ class _ConverterViewState extends State<ConverterView> {
               },
               items: units.map((unit) => DropdownMenuItem(
                         value: unit,
-                        child: Text(unit),
+                        child: Text(unit, style: TextStyle(color: Color(0xff005a4e))),
                       ))
                   .toList(),
             ),
@@ -191,13 +189,8 @@ class _ConverterViewState extends State<ConverterView> {
             // Input field for the value to convert
             TextField(
               keyboardType: TextInputType.number,
-              cursorColor: Color.fromRGBO(67, 160, 71, 1),
               decoration: InputDecoration(
-                labelText: 'Enter value' ,
-                labelStyle: TextStyle(color: Colors.grey),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
+                hintText: 'Enter value' ,
                 errorText: isInputValid ? null : 'Invalid input', // Show error message
               ),
               onChanged: (val) {
@@ -225,7 +218,7 @@ class _ConverterViewState extends State<ConverterView> {
               result == null
                   ? 'Result: '
                   : 'Result: ${result!.toStringAsFixed(4)}',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 24, color: Color(0xff005a4e)),
             ),
           ],
         ),

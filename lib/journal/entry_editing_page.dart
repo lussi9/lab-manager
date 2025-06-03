@@ -42,8 +42,8 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       leading: const CloseButton(),
+      title: Text(widget.entry == null ? 'Add Entry' : 'Edit Entry'),
       actions: buildEditingActions(),
-      backgroundColor: Color.fromRGBO(67, 160, 71, 1),
     ),
     body: Container(
       padding: const EdgeInsets.all(12),
@@ -55,10 +55,10 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
               title: TextFormField(
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                cursorColor: Color.fromRGBO(67, 160, 71, 1),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xff005a4e)),
                 decoration: InputDecoration(
                   border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                   hintText: 'Add Title',
                 ),
                 validator: (title) =>
@@ -74,13 +74,12 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
               contentPadding: const EdgeInsets.all(5),
               leading: Icon(
                 Icons.subject,
-                color: Colors.grey,
+                color: Color(0xff005a4e)
               ),
               title: TextFormField(
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
-                  border: InputBorder.none,
                   hintText: 'Add a description',
                 ),
                 controller: descriptionController,
@@ -90,9 +89,7 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
             ),
             ListTile( // Date
               contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-              leading: Icon(
-                Icons.date_range,
-                color: Colors.grey),
+              leading: Icon(Icons.date_range, color: Color(0xff005a4e)),
               title: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
@@ -115,12 +112,6 @@ class _EntryEditingPageState extends State<EntryEditingPage> {
 
   List<Widget> buildEditingActions() => [
     IconButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        iconColor: Colors.white,
-        iconSize: 22,
-      ),
       onPressed: saveEntry,
       icon: Icon(Icons.done),
     ),

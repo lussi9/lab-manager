@@ -17,23 +17,17 @@ class TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Timer'),
-        backgroundColor: Colors.green[600],),
+      appBar: AppBar(title: Text('Timer')),
       body: Column(
         children: [
           SizedBox(height: 10),
-          Text('Pick Timer Duration', style: TextStyle(fontSize: 19)),
+          Text('Pick Timer Duration', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Color(0xff005a4e)),),
           SizedBox(height: 20),
           _buildPlatformTimerPicker(),
           SizedBox(height: 20),
           ElevatedButton(onPressed: _addTimer,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1), 
-              foregroundColor: Colors.white,
-            ),
-            child: Text("Add Timer", style: TextStyle(fontSize: 18)),),
-          SizedBox(height: 20),
-          Expanded(
+            child: Text("Add Timer")),
+          SizedBox(height: 20),          Expanded(
             child: Consumer<TimerProvider>(
               builder: (context, provider, _){
               return ListView.builder(
@@ -50,24 +44,24 @@ class TimerPageState extends State<TimerPage> {
                         label: 'Delete',
                         onPressed: (context) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("${t.label} deleted")),
+                            SnackBar(content: Text("The timer: ${t.label} was deleted")),
                           );
                           provider.removeTimer(t);
                         },
                       ),
                     ],),
                   child: ListTile(
-                    title: Text(t.label),
+                    title: Text(t.label,  style: TextStyle(color: Color(0xff005a4e), fontWeight: FontWeight.bold, fontSize: 18)),
                     subtitle: Text(_format(t.remaining)),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(t.isRunning ? Icons.pause : Icons.play_arrow),
+                          icon: Icon(t.isRunning ? Icons.pause : Icons.play_arrow, color: Color(0xff005a4e)),
                           onPressed: () => provider.startPauseTimer(t),
                         ),
                         IconButton(
-                          icon: Icon(Icons.restore),
+                          icon: Icon(Icons.restore, color: Color(0xff005a4e),),
                           onPressed: () => provider.resetTimer(t),
                         ),
                       ],
@@ -148,7 +142,7 @@ class TimerPageState extends State<TimerPage> {
         ),
       );
     } else {
-      return Text("Timer Picker not available on this platform.");
+      return Text("Timer Picker not available on this platform.", style: TextStyle(color: Color(0xff005a4e)),);
     }
   }
 
@@ -193,12 +187,12 @@ Widget _numberPicker({
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text(label),
+      Text(label, style: TextStyle(color: Color(0xff005a4e), fontSize: 18),),
       DropdownButton<int>(
         value: value,
         items: List.generate(
           max + 1,
-          (i) => DropdownMenuItem(value: i, child: Text(i.toString().padLeft(2, '0'))),
+          (i) => DropdownMenuItem(value: i, child: Text(i.toString().padLeft(2, '0'), style: TextStyle(color: Color(0xff005a4e)))),
         ),
         onChanged: (newValue) {
           if (newValue != null) {

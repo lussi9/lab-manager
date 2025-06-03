@@ -17,113 +17,107 @@ class JournalWidgetState extends State<JournalWidget> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  @override ////////////////////////////////
+  @override
   void initState() {
     super.initState();
     Provider.of<EntryProvider>(context, listen: false).loadEntries();
   }
 
-
   void _filterEntries(String query) {
     setState(() {
-      _searchQuery = query; // Actualiza la consulta de búsqueda
+      _searchQuery = query;
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final entryProvider = Provider.of<EntryProvider>(context);
-    final entries = entryProvider.entries;
-    // Filtra las entradas según la consulta de búsqueda
-    final filteredEntries = _searchQuery.isEmpty
-        ? entries
-        : entries
-            .where((entry) =>
-                entry.title.toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList();
+  List<Entry> getFilteredEntries(List<Entry> entries) {
+    if (_searchQuery.isEmpty) return entries;
+    return entries
+        .where((entry) =>
+            entry.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
 
-    return Scaffold(
-      body: Column(
+  @override
+Widget build(BuildContext context) {
+  final entries = Provider.of<EntryProvider>(context).entries; // Nullable
+  final filteredEntries = getFilteredEntries(entries);
+
+  return Scaffold(
+    body: Column(
       children: [
-        // Search bar
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: _searchController,
-            onChanged: _filterEntries, // Call _filterEntries on text change
-            cursorColor: Color.fromRGBO(67, 160, 71, 1),
-            decoration: InputDecoration(
-              hintText: 'Search entries by title...',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(67, 160, 71, 1), // Set the border color to green when focused
-                  width: 2.0,
-                ),
-              ),
+            onChanged: _filterEntries,
+            decoration: const InputDecoration(
+              hintText: 'Search',
+              prefixIcon: Icon(Icons.search),
             ),
           ),
         ),
-        // Entry list
         Expanded(
           child: filteredEntries.isEmpty
             ? const Center(child: Text("No entries found"))
             : ListView.builder(
-              itemCount: filteredEntries.length,
-              itemBuilder: (context, index) {
-                final entry = filteredEntries[index];
-                return Slidable(
-                  startActionPane: ActionPane(
-                    motion: const DrawerMotion(),
-                    children: [
-                      SlidableAction(
-                        backgroundColor: Colors.red,
-                        icon: Icons.delete,
-                        label: 'Delete',
-                        onPressed: (context) {
-                          Provider.of<EntryProvider>(context, listen: false).deleteEntry(entry);
-                        },
-                      ),
-                    ],),
-                  child: buildEntry(entry, index)
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+                itemCount: filteredEntries.length,
+                itemBuilder: (context, index) {
+                  final entry = filteredEntries[index];
+                  return Slidable(
+                    startActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          backgroundColor: Colors.red,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                          onPressed: (context) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("The entry: ${entry.title} was deleted")),
+                            );
+                            Provider.of<EntryProvider>(context, listen: false)
+                                .deleteEntry(entry);
+                            Provider.of<EntryProvider>(context, listen: false)
+                                .loadEntries();
+                          },
+                        ),
+                      ],
+                    ),
+                    child: buildEntry(entry),
+                  );
+                },
+              ),
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget buildEntry(Entry entry, int index) => Card(
+  Widget buildEntry(Entry entry) => Card(
     child: ListTile(
       leading: SizedBox(
-        height: 50, // Constrain the height of the leading widget
+        height: 50,
         child: FittedBox(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
                 DateFormat.d().format(entry.date),
-                style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(67, 160, 71, 1)),
+                style: const TextStyle(color: Color(0xff9fe594), fontSize: 28, fontWeight: FontWeight.bold),
               ),
               Text(DateFormat.MMM().format(entry.date),
-                  style: const TextStyle(fontSize: 16)),
+                style: TextStyle( color: Colors.white, fontSize: 16)),
             ],
           ),
         ),
       ),
-      title: Text(entry.title,
-          style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(entry.description,
-          maxLines: 2, overflow: TextOverflow.ellipsis),
+      title: Text(entry.title, style: Theme.of(context).textTheme.titleMedium,),
+      subtitle: Text(
+        entry.description,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: Colors.white)
+      ),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(

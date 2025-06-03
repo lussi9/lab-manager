@@ -54,12 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text(
           'Sign in',
-          style: TextStyle(fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back),
           onPressed: () { 
             Navigator.of(context).pop();
           }
@@ -73,27 +71,25 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextFormField(
-                  cursorColor: Colors.grey[350],
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email address',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
                     ),
+                    hintText: 'Email address',
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
-                  cursorColor: Colors.grey[350],
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: const TextStyle(color: Colors.grey),
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
                     ),
+                    hintText: 'Password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible
@@ -108,19 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _loginUser,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: Color.fromRGBO(67, 160, 71, 1), 
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'Sign in',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
@@ -132,7 +115,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: const Text(
                     'Have you forgotten your password?',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _loginUser,
+                  child: const Text(
+                    'Sign in',
                   ),
                 ),
               ],

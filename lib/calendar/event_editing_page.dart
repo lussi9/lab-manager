@@ -28,18 +28,18 @@ class _EventEditingPageState extends State<EventEditingPage>{
 
   final List<Color> _colorCollection = [
     Colors.red,
-    Colors.blue,
-    Color.fromRGBO(67, 160, 71, 1),
-    Colors.yellow,
     Colors.orange,
+    Color.fromRGBO(67, 160, 71, 1),
+    Colors.blue,
+    Colors.deepPurple
   ];
 
   final List<String> _colorNames = [
     'Red',
-    'Blue',
-    'Green',
-    'Yellow',
     'Orange',
+    'Green',
+    'Blue',
+    'Purple',
   ];
 
   int _selectedColorIndex = 0;
@@ -47,8 +47,6 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   void initState(){
     super.initState();
-    final calendarProvider = Provider.of<EventProvider>(context, listen: false);
-    calendarProvider.loadEvents();
     if(widget.selectedEvent == null){
       fromDate = DateTime.now();
       toDate = DateTime.now().add(Duration(hours: 2));
@@ -80,7 +78,6 @@ class _EventEditingPageState extends State<EventEditingPage>{
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       title: Text('Event details'),
       leading: CloseButton(),
       actions: buildEditingActions(),
@@ -96,10 +93,10 @@ class _EventEditingPageState extends State<EventEditingPage>{
               contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
               leading: const Text(''),
               title: TextFormField(
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                cursorColor: Color.fromRGBO(67, 160, 71, 1),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xff005a4e)),
                 decoration: InputDecoration(
                   border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                   hintText: 'Add Title',
                 ),
                 onFieldSubmitted: (_) => saveForm(),
@@ -116,18 +113,18 @@ class _EventEditingPageState extends State<EventEditingPage>{
               contentPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
               leading: Icon(
                 Icons.access_time,
-                color: Colors.grey,
+                color: Color(0xff005a4e)
               ),
               title: Row(children: <Widget>[
                 const Expanded(
-                  child: Text('All day', style: TextStyle(fontSize: 18),),
+                  child: Text('All day', style: TextStyle(fontSize: 16),),
                 ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Switch(
                       value: _isAllDay,
-                      activeColor: Color.fromRGBO(67, 160, 71, 1),
+                      activeColor: Color(0xff005a4e),
                       onChanged: (bool value) {
                         setState(() {
                           _isAllDay = value;
@@ -204,7 +201,6 @@ class _EventEditingPageState extends State<EventEditingPage>{
                   color: _colorCollection[_selectedColorIndex]),
               title: Text(
                 _colorNames[_selectedColorIndex],
-                style: TextStyle(fontSize: 18),
               ),
               onTap: () {
                 showDialog<Widget>(
@@ -243,17 +239,16 @@ class _EventEditingPageState extends State<EventEditingPage>{
               contentPadding: const EdgeInsets.all(5),
               leading: Icon(
                 Icons.subject,
-                color: Colors.grey,
+                color: Color(0xff005a4e)
               ),
               title: TextFormField(
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                   hintText: 'Add a description',
-                  hintStyle: TextStyle(
-                    fontSize: 18,
-                  ),
+                  hintStyle: TextStyle(fontSize: 16)
                 ),
                 controller: descController,
                 onFieldSubmitted: (_) => saveForm(),
@@ -267,18 +262,18 @@ class _EventEditingPageState extends State<EventEditingPage>{
               contentPadding: const EdgeInsets.all(5),
               leading: Icon(
                 Icons.notifications,
-                color: Colors.grey,
+                color: Color(0xff005a4e)
               ),
               title: Row(children: <Widget>[
                 const Expanded(
-                  child: Text('Receive notification', style: TextStyle(fontSize: 18),),
+                  child: Text('Receive notification', style: TextStyle(fontSize: 16)),
                 ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Switch(
                       value: _receiveNotification,
-                      activeColor: Color.fromRGBO(67, 160, 71, 1),
+                      activeColor: Color(0xff005a4e),
                       onChanged: (bool value) {
                         setState(() {
                           _receiveNotification = value;
@@ -311,18 +306,12 @@ class _EventEditingPageState extends State<EventEditingPage>{
       },
       backgroundColor: Colors.red,
       child:
-        const Icon(Icons.delete_outline, color: Colors.white),
+       Icon(Icons.delete_outline),
     ),
   );
 
   List<Widget> buildEditingActions()=> [
     IconButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        iconColor: Colors.white,
-        iconSize: 22,
-      ),
       onPressed: saveForm,
       icon: Icon(Icons.done),
     ),
@@ -349,7 +338,7 @@ class _EventEditingPageState extends State<EventEditingPage>{
 
     if (date.isBefore(fromDate)) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('The end date cannot be prior to the start date.', style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,),
+      const SnackBar(content: Text('The end date cannot be prior to the start date.'), backgroundColor: Colors.red,),
     );
     return;
   }

@@ -22,14 +22,10 @@ class InventoryWidgetState extends State<InventoryWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: buildFolders(),
-    );
-  }
-
-  Widget buildFolders() {
     final folders = Provider.of<InventoryProvider>(context).folders;
-    return Column(
+
+    return Scaffold(
+      body: Column(
       children: [
         Expanded(
           child: folders.isEmpty
@@ -77,15 +73,15 @@ class InventoryWidgetState extends State<InventoryWidget> {
             ),
           ),
       ],
+      ),
     );
   }
 
   Widget _buildFolderTile(Folder folder) => Card(
     child: ListTile(
-      leading: const Icon(Icons.folder, size: 40),
+      leading: Icon(Icons.folder, color: Color(0xfff2f2f2),),
       title: Text(
-        folder.name,
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        folder.name, style: Theme.of(context).textTheme.titleMedium,
       ),
       onTap: () {
         Navigator.push(
@@ -95,7 +91,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
           ),
         );
       },
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      trailing: Icon(Icons.arrow_forward_ios, color: Color(0xfff2f2f2),),
     ),
   );
 
@@ -112,13 +108,8 @@ class InventoryWidgetState extends State<InventoryWidget> {
           child: TextFormField(
             initialValue: folderName,
             autofocus: true,
-            cursorColor: const Color.fromARGB(255, 204, 202, 202),
             decoration: const InputDecoration(
-              labelText: 'Folder name',
-              labelStyle: TextStyle(color: Colors.grey),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
+              hintText: 'Folder name',
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -132,12 +123,9 @@ class InventoryWidgetState extends State<InventoryWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
-            ),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 final provider = Provider.of<InventoryProvider>(context, listen: false);
@@ -149,7 +137,7 @@ class InventoryWidgetState extends State<InventoryWidget> {
                 Navigator.pop(context);
               }
             },
-            child: Text(folder == null ? 'Save' : 'Update', style: const TextStyle(color: Colors.white)),
+            child: Text(folder == null ? 'Save' : 'Update'),
           ),
         ],
       ),

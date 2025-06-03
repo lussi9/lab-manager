@@ -29,7 +29,7 @@ class Event {
     'to': to,
     'background': background.toARGB32(),
     'isAllDay': isAllDay,
-    'notification': false,
+    'notification': notification,
   };
 
   static Event fromJson(Map<String, dynamic> json, String id) => Event(
@@ -40,6 +40,6 @@ class Event {
     to: (json['to'] as Timestamp).toDate(),
     background: Color(json['background']), // Handle null case
     isAllDay: json['isAllDay'], // Handle null case
-    notification: json['isAllDay'], // Handle null case
+    notification: json['notification'], // Handle null case
   );
 }

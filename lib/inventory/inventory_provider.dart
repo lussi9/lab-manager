@@ -139,33 +139,17 @@ class InventoryProvider extends ChangeNotifier {
   Future<void> deleteFolder(Folder folder) async {
     try {
       final folderRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('folders')
-          .doc(folder.documentId);
-
-      final fungiblesSnapshot = await folderRef.collection('fungibles').get();
-      for (final doc in fungiblesSnapshot.docs) {
-        await doc.reference.delete();
-      }
+          .collection('users').doc(userId)
+          .collection('folders').doc(folder.documentId);
 
       await folderRef.delete();
+      _folders.removeWhere((f) => f.documentId == folder.documentId);
       folderFungibles.remove(folder.documentId);
+
       notifyListeners();
     } catch (e) {
       print('Error deleting Folder: $e');
     }
-  }
-
-  Stream<List<Folder>> folderStream() {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Folder.fromJson(doc.data(), doc.id)).toList());
   }
 
   Future<void> loadFolders() async {
@@ -210,27 +194,4 @@ class InventoryProvider extends ChangeNotifier {
     }
   }
 
-Stream<List<Fungible>> fungiblesStream(String folderId) {
-  final userId = FirebaseAuth.instance.currentUser?.uid;
-  return FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('folders')
-      .doc(folderId)
-      .collection('fungibles')
-      .snapshots()
-      .map((snapshot) {
-    List<Fungible> fungibles = snapshot.docs
-        .map((doc) => Fungible.fromJson(doc.data(), doc.id))
-        .toList();
-
-    if (selectedOrder == "name") {
-      fungibles.sort((a, b) => a.name.compareTo(b.name));
-    } else if (selectedOrder == "quantity") {
-      fungibles.sort((a, b) => a.quantity.compareTo(b.quantity));
-    }
-
-    return fungibles;
-  });
-}
 }

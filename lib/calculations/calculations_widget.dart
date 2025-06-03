@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lab_manager/calculations/calculator_page.dart';
 import 'package:lab_manager/calculations/timer_page.dart';
 import 'package:lab_manager/calculations/converter_page.dart';
-import 'package:lab_manager/objects/square_button.dart';
 
 class CalculationsWidget extends StatelessWidget {
   @override
@@ -12,24 +11,50 @@ class CalculationsWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          squareButton(title: 'Timer', buttontapped: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TimerPage()),
-            );
-          }),
-          squareButton(title: 'Calculator', color: const Color.fromRGBO(56, 142, 60, 1), buttontapped: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CalculatorPage()),
-            );
-          }),
-          squareButton(title: 'Converter', color: const Color.fromRGBO(67, 160, 71, 1), buttontapped: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ConverterView()),
-            );
-          }),
+          Expanded(
+          flex: 1,
+          child: Card(
+            child: Center(
+              child: ListTile(
+                title: Center(child: Text('Timer', style: Theme.of(context).textTheme.titleLarge), ),
+                onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TimerPage()),
+                );
+              },
+              ),
+          ))),
+          Expanded(
+            flex: 1,
+            child: Card(
+              child: Center(
+                child: ListTile(
+                  title: Center(child:Text('Calculator', style: Theme.of(context).textTheme.titleLarge)), 
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CalculatorPage()),
+                    );
+                  },),
+              )
+            )
+          ),
+          Expanded(
+            flex: 1,
+            child: Card(
+              child: Center(
+                child: ListTile(
+                  title: Center(child:Text('Converter', style: Theme.of(context).textTheme.titleLarge)),
+                  onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConverterView()),
+                );
+              }),
+              ),
+            ),
+          ),
         ],
       ),
     );

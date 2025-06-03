@@ -18,7 +18,7 @@ class CalculatorPageState extends State<CalculatorPage> {
   @override
   Widget build(BuildContext context) {
     List<String> buttons = [
-      'C', '√', '%', '/', 
+      'C/AC', '√', '%', '/', 
       '7', '8', '9', 'x',
       '4', '5', '6', '-',
       '1', '2', '3', '+',
@@ -28,13 +28,12 @@ class CalculatorPageState extends State<CalculatorPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculator'),
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Builder(
               builder: (context) => IconButton(
-                icon: const Icon(Icons.history, size: 30),
+                icon: Icon(Icons.history, size: 30),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
                 tooltip: 'History',
               ),
@@ -46,7 +45,7 @@ class CalculatorPageState extends State<CalculatorPage> {
         child: Column(
           children: [
             const DrawerHeader(
-              child: Center(child: Text('Calculation History', style: TextStyle(fontSize: 20))),
+              child: Center(child: Text('Calculation History')),
             ),
             Expanded(
               child: history.isEmpty
@@ -55,7 +54,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       itemCount: history.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text(history[index]),
+                          title: Text(history[index], style: TextStyle(fontSize: 24),),
                         );
                       },
                     ),
@@ -73,7 +72,6 @@ class CalculatorPageState extends State<CalculatorPage> {
                 label: const Text('Clear History'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
                 ),
               ),
             )
@@ -93,14 +91,20 @@ class CalculatorPageState extends State<CalculatorPage> {
                       padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
                       alignment: Alignment.centerRight,
                       child: Text(
-                        userInput, style: const TextStyle(fontSize: 25, color: Colors.grey),
+                        userInput, style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Color(0xff299082),
+                          fontSize: 25,
+                        ),
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 15, right: 15),
                       alignment: Alignment.centerRight,
                       child: Text(
-                        result.toString(), style: const TextStyle(fontSize: 40)
+                        result.toString(), style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Color(0xff005a4e),
+                          fontSize: 40,
+                        )
                       ),
                     )
                   ],
@@ -126,7 +130,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       if(index == 0){ // C
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Colors.grey[600],
+                          color: Color(0xff299082),
                           textColor: Colors.white,
                           buttonTapped: () {
                             setState(() {
@@ -145,7 +149,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       else if(index == 1){ // sqrt
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Colors.grey[600],
+                          color: Color(0xff299082),
                           textColor: Colors.white,
                           buttonTapped: (){
                             setState(() {
@@ -158,7 +162,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       else if(index == 2){ // %
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Colors.grey[600],
+                          color: Color(0xff299082),
                           textColor: Colors.white,
                           buttonTapped: () {
                             setState(() {
@@ -171,7 +175,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       else if(index == 16){ // ()
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Colors.grey[600],
+                          color: Color(0xFF005a4e),
                           textColor: Colors.white,
                           buttonTapped: () {
                             setState(() {
@@ -189,7 +193,7 @@ class CalculatorPageState extends State<CalculatorPage> {
                       else if(index == 18){ // .
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Colors.grey[600],
+                          color: Color(0xFF005a4e),
                           textColor: Colors.white,
                           buttonTapped: () {
                             setState(() {
@@ -202,8 +206,8 @@ class CalculatorPageState extends State<CalculatorPage> {
                       else if(index == 19) { // =
                         return MyButton(
                           buttonText: buttons[index],
-                          color: Color.fromRGBO(67, 160, 71, 1),
-                          textColor: Colors.white,
+                          color: Color(0xff9fe594),
+                          textColor: Color(0xff005a4e),
                           buttonTapped: () {
                             setState(() {
                               equalPressed();
@@ -220,8 +224,8 @@ class CalculatorPageState extends State<CalculatorPage> {
                             });
                           },
                           buttonText: buttons[index],
-                          color: isOperator(buttons[index])? Color.fromRGBO(67, 160, 71, 1) : Colors.grey[800],
-                          textColor: Colors.white,
+                          color: isOperator(buttons[index])? Color(0xff9fe594) : Color(0xff005a4e),
+                          textColor: isOperator(buttons[index])? Color(0xff005a4e) : Colors.white,
                         );
                       }
                     });

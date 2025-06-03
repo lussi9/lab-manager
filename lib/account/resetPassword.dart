@@ -62,12 +62,8 @@ class ResetPasswordRequestScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Reset Password',
-          style: TextStyle(
-            fontSize: 24,
-          ),
         ),
         centerTitle: true,
-        backgroundColor:  Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Stack(
         children: [
@@ -80,24 +76,22 @@ class ResetPasswordRequestScreen extends StatelessWidget {
                 const Text(
                   'Introduce your email address to reset your password.',
                   textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Color(0xff005a4e)),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email address',
-                    border: OutlineInputBorder(),
+                    hintText: 'Email address',
                   ),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => _sendPasswordResetEmail(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-                    minimumSize: const Size(
-                        double.infinity, 50), // Botón ancho
+                    minimumSize: const Size(double.infinity, 50), // Botón ancho
                   ),
-                  child: const Text('Send', style: TextStyle(fontSize: 18, color: Colors.white)),
+                  child: const Text('Send'),
                 ),
               ],
             ),

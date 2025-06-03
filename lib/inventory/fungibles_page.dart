@@ -47,17 +47,17 @@ class FungiblesPageState extends State<FungiblesPage> {
                   items: [
                     DropdownMenuItem(
                       value: "name",
-                      child: Text("Order by Name"),
+                      child: Text("Order by Name", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                     ),
                     DropdownMenuItem(
                       value: "quantity",
-                      child: Text("Order by Quantity"),
+                      child: Text("Order by Quantity", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                     ),
                   ],
                   hint: Text("Order List"),
                 ),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.grey[350]),
+                  icon: Icon(Icons.settings, size: 30,),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -76,7 +76,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         IconButton(
-                                          icon: const Icon(Icons.remove),
+                                          icon: Icon(Icons.remove),
                                           onPressed: () {
                                             if (tempLimit > 0) {
                                               setDialogState(() {
@@ -87,12 +87,11 @@ class FungiblesPageState extends State<FungiblesPage> {
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          tempLimit.toString(),
-                                          style: const TextStyle(fontSize: 20),
+                                          tempLimit.toString(), style: TextStyle(fontSize: 20),
                                         ),
                                         const SizedBox(width: 8),
                                         IconButton(
-                                          icon: const Icon(Icons.add),
+                                          icon: Icon(Icons.add),
                                           onPressed: () {
                                             setDialogState(() {
                                               tempLimit++;
@@ -107,17 +106,14 @@ class FungiblesPageState extends State<FungiblesPage> {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                                  child: const Text('Cancel'),
                                 ),
                                 ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
-                                  ),
                                   onPressed: () {
                                     inventoryProvider.setQuantityLimit(tempLimit);
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Save', style: TextStyle(color: Colors.white)),
+                                  child: const Text('Save'),
                                 ),
                               ],
                             );
@@ -133,7 +129,7 @@ class FungiblesPageState extends State<FungiblesPage> {
           Expanded(
             child: fungibleList.isEmpty ? 
             ListView.builder(
-              itemCount: 1,
+              itemCount: 2,
               itemBuilder: (context, index){
                 return AddItem(onPressed: () => _showAddFungibleDialog(context));
             })
@@ -153,6 +149,9 @@ class FungiblesPageState extends State<FungiblesPage> {
                       icon: Icons.delete,
                       label: 'Delete',
                       onPressed: (context) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("The fungible: ${fungibleList[index].name} was deleted")),
+                        );
                         Provider.of<InventoryProvider>(context, listen: false).deleteFungible(widget.folder.documentId!, fungibleList[index]);
                       },
                     ),
@@ -188,17 +187,16 @@ class FungiblesPageState extends State<FungiblesPage> {
         child: Center(
           child: ListTile(
             title: Text(
-              fungible.name, 
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              fungible.name, style: Theme.of(context).textTheme.titleMedium,
             ),
             subtitle: fungible.description.isNotEmpty 
-                ? Text(fungible.description) 
+                ? Text(fungible.description, style: Theme.of(context).textTheme.bodyMedium) 
                 : null,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.remove, color: Colors.grey),
+                  icon: Icon(Icons.remove, color: Color(0xfff2f2f2)),
                   onPressed: () async {
                     if (fungible.quantity > 0) {
                       inventoryProvider.updateFungible(
@@ -217,15 +215,16 @@ class FungiblesPageState extends State<FungiblesPage> {
                 Text(
                   fungible.quantity.toString(),
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                     color: fungible.quantity >= inventoryProvider.quantityLimit 
-                        ? Color.fromRGBO(67, 160, 71, 1) 
+                        ? Color(0xff9fe594) 
                         : Colors.red,
                   ),
                 ),
                 SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.add, color: Colors.grey),
+                  icon: Icon(Icons.add, color: Color(0xfff2f2f2),),
                   onPressed: () async {
                     inventoryProvider.updateFungible(
                       widget.folder.documentId!,
@@ -263,13 +262,8 @@ class FungiblesPageState extends State<FungiblesPage> {
             children: [
               TextFormField(
                 initialValue: name,
-                cursorColor: Colors.grey[350],
                 decoration: const InputDecoration(
-                  labelText: 'Name',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
+                  hintText: 'Name',
                 ),
                 onChanged: (value) => name = value,
                 validator: (value) =>
@@ -277,25 +271,15 @@ class FungiblesPageState extends State<FungiblesPage> {
               ),
               TextFormField(
                 initialValue: description,
-                cursorColor: Colors.grey[350],
                 decoration: const InputDecoration(
-                  labelText: 'Description',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
+                  hintText: 'Description',
                 ),
                 onChanged: (value) => description = value,
               ),
               TextFormField(
                 initialValue: quantity.toString(),
-                cursorColor: Colors.grey[350],
                 decoration: const InputDecoration(
-                  labelText: 'Quantity',
-                  labelStyle: TextStyle(color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
+                  hintText: 'Quantity',
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
@@ -316,12 +300,9 @@ class FungiblesPageState extends State<FungiblesPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
-            ),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 final provider = Provider.of<InventoryProvider>(context, listen: false);
@@ -341,7 +322,7 @@ class FungiblesPageState extends State<FungiblesPage> {
                 Navigator.pop(context);
               }
             },
-            child: Text(fungible == null ? 'Save' : 'Update', style: const TextStyle(color: Colors.white)),
+            child: Text(fungible == null ? 'Save' : 'Update'),
           ),
         ],
       ),

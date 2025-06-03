@@ -71,12 +71,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text(
           'Register',
-          style: TextStyle(fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back),
           onPressed: () { 
             Navigator.of(context).pop();
           }
@@ -98,8 +96,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _nameController,
                             decoration: const InputDecoration(
-                              labelText: 'Name',
                               border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
+                              ),
+                              hintText: 'Name',
                             ),
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -116,8 +117,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _surnameController,
                             decoration: const InputDecoration(
-                              labelText: 'Surname',
                               border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
+                              ),
+                              hintText: 'Surname',
                             ),
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -134,8 +138,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           TextFormField(
                             controller: _emailController,
                             decoration: const InputDecoration(
-                              labelText: 'Email address',
                               border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
+                              ),
+                              hintText: 'Email address',
                             ),
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -154,8 +161,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: _passwordController,
                             obscureText: !_isPasswordVisible,
                             decoration: InputDecoration(
-                              labelText: 'Password',
                               border: const OutlineInputBorder(),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
+                              ),
+                              hintText: 'Password',
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isPasswordVisible
@@ -178,8 +188,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: _confirmPasswordController,
                             obscureText: !_isConfirmPasswordVisible,
                             decoration: InputDecoration(
-                              labelText: 'Repeat your password',
                               border: const OutlineInputBorder(),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Color(0xFF005a4e), width: 2),
+                              ),
+                              hintText: 'Repeat your password',
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isConfirmPasswordVisible
@@ -204,12 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: _registerUser,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-                              minimumSize: const Size(
-                                  double.infinity, 50), // Botón ancho
-                            ),
-                            child: const Text('Register', style: TextStyle(fontSize: 18, color: Colors.white),),
+                            child: const Text('Register'),
                           ),
                         ],
                       ),

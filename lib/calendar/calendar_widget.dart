@@ -1,6 +1,5 @@
 import 'package:lab_manager/calendar/event_data_source.dart';
 import 'package:flutter/material.dart';
-import 'package:lab_manager/calendar/event_provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:lab_manager/calendar/event_editing_page.dart';
@@ -19,25 +18,22 @@ class CalendarWidgetState extends State<CalendarWidget>{
 
   @override
   void initState() {
-    Provider.of<EventProvider>(context, listen: false).loadEvents();
     _selectedEvent = null;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final events = Provider.of<EventProvider>(context).events;
+    final events = Provider.of<List<Event>>(context);
 
     return SfCalendar(
       view: CalendarView.month,
       controller: calendarController,
-      todayHighlightColor: Color.fromRGBO(67, 160, 71, 1),
-      todayTextStyle: TextStyle(
-        color: Colors.white,
-      ),
+      todayHighlightColor: Theme.of(context).colorScheme.primary,
+      //todayTextStyle: TextStyle(color: Color(0xFFF2F2F2)),
       selectionDecoration: BoxDecoration(
         color: Colors.transparent,
-        border: Border.all(color: const Color.fromRGBO(46, 125, 50, 1), width: 2),
+        border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
       firstDayOfWeek: 1, //Lunes primer dia de la semana

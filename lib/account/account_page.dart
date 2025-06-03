@@ -35,26 +35,15 @@ class _AccountPageState extends State<AccountPage> {
       appBar: AppBar(
         title: const Text('My Account'),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
         child: ListView(
           children: [
-            Text(
-              name,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              user?.email ?? '',
-              style: const TextStyle(color: Colors.grey, fontSize: 16),
-            ),
+            Text(name, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
+            Text(user?.email ?? '', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary),),
             const SizedBox(height: 20),
             Card(
-              elevation: 4, // Add elevation for shadow effect
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12), // Rounded corners
-              ),
               child: Padding(
                 padding: const EdgeInsets.all(0.0),
                 child: Column(
@@ -80,8 +69,8 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           ListTile(
-            leading: Icon(icon, color: title == ("Delete Account")? Colors.red : Color.fromRGBO(67, 160, 71, 1)),
-            title: Text(title, style: TextStyle(fontSize: 18),),
+            leading: Icon(icon, color: Theme.of(context).colorScheme.onPrimary),
+            title: Text(title, style: Theme.of(context).textTheme.titleMedium),
             onTap: onTap,
           ),
         ],
@@ -94,18 +83,15 @@ class _AccountPageState extends State<AccountPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out?'),
+        content: Text('Are you sure you want to sign out?', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), // Cancel
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(67, 160, 71, 1),
-            ),
             onPressed: () => Navigator.pop(context, true), // Confirm
-            child: const Text('Sign out', style: TextStyle(color: Colors.white)),
+            child: const Text('Sign out'),
           ),
         ],
       ),
@@ -145,14 +131,9 @@ class _AccountPageState extends State<AccountPage> {
             child: Column(
               children: [
                 TextFormField(
-                  cursorColor: Colors.grey[350],
                   obscureText: !isOldPassVisible,
                   decoration: InputDecoration(
-                    labelText: 'Old Password',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
+                    hintText: 'Old Password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         isOldPassVisible
@@ -172,14 +153,9 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  cursorColor: Colors.grey[350],
                   obscureText: !isNewPassVisible,
                   decoration: InputDecoration(
-                    labelText: 'New Password',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
+                    hintText: 'New Password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         isNewPassVisible
@@ -205,12 +181,9 @@ class _AccountPageState extends State<AccountPage> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(67, 160, 71, 1),
-          ),
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               try {
@@ -236,7 +209,7 @@ class _AccountPageState extends State<AccountPage> {
               }
             }
           },
-          child: const Text('Change', style: TextStyle(color: Colors.white)),
+          child: const Text('Change'),
         ),
       ],
     ),
@@ -244,48 +217,115 @@ class _AccountPageState extends State<AccountPage> {
   );
 }
 
-  Future<void> _showDeleteAccountDialog() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false), // Cancel
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            onPressed: () => Navigator.pop(context, true), // Confirm
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+Future<void> _showDeleteAccountDialog() async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Delete Account'),
+      content: Text(
+        'Are you sure you want to delete your account? This action cannot be undone.',
+        style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16),
       ),
-    );
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Delete'),
+        ),
+      ],
+    ),
+  );
 
-    if (confirm == true) {
-      try {
-        // Delete the user's account
-        await _auth.currentUser!.delete();
+  if (confirm == true) {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
 
-        // Navigate to the login page after account deletion
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AuthUserPage()),
-        );
+      // Prompt user for password
+      final passwordController = TextEditingController();
+      final reauth = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Re-authenticate'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Please enter your password to continue.', style: TextStyle(color: Color(0xFF005a4e), fontSize: 16)),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirm'),
+            ),
+          ],
+        ),
+      );
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account deleted successfully')),
-        );
-      } catch (e) {
-        // Handle errors (e.g., re-authentication required)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+      if (reauth != true) return;
+
+      final email = user?.email;
+      final password = passwordController.text;
+      final userId = user?.uid;
+
+      final credential = EmailAuthProvider.credential(email: email!, password: password);
+
+      // Reauthenticate
+      await user!.reauthenticateWithCredential(credential);
+
+      final userDocRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+      // Delete entries
+      final entries = await userDocRef.collection('entries').get();
+      for (var doc in entries.docs) {
+        await doc.reference.delete();
       }
+
+      // Delete events
+      final events = await userDocRef.collection('events').get();
+      for (var doc in events.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete folders and their fungibles
+      final folders = await userDocRef.collection('folders').get();
+      for (var folder in folders.docs) {
+        final fungibles = await folder.reference.collection('fungibles').get();
+        for (var f in fungibles.docs) {
+          await f.reference.delete();
+        }
+        await folder.reference.delete();
+      }
+
+      // Optionally delete the user document itself
+      await userDocRef.delete();
+
+      // Delete account
+      await user.delete();
+
+      // Navigate to login
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const AuthUserPage()),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
+}
+
 }

@@ -9,19 +9,6 @@ class EntryProvider extends ChangeNotifier {
   List<Entry> get entries => _entries;
   String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
-  Stream<List<Entry>> entryStream() {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('entries')
-        .snapshots()
-        .map((snapshot) {
-          print('Entries snapshot: ${snapshot.docs.length}');
-          return snapshot.docs.map((doc) => Entry.fromJson(doc.data(), doc.id)).toList();
-        });
-  }
-
   Future<void> addEntry(Entry entry) async {
     try {
       final docRef = await FirebaseFirestore.instance
@@ -54,7 +41,6 @@ class EntryProvider extends ChangeNotifier {
           .collection('entries')
           .doc(entry.documentId)
           .delete();
-
       _entries.remove(entry);
       notifyListeners();
     } catch (e) {

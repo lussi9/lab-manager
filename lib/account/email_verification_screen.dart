@@ -61,29 +61,24 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       appBar: AppBar(
         title: const Text('Email Verification'),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(67, 160, 71, 1),
         automaticallyImplyLeading: false, // Oculta el botón de retroceso
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'A verification email has been sent to your account. Please check your email and press the button below to continue.',
               textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xff005a4e), fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _checkEmailVerification,
               style: ElevatedButton.styleFrom(
-                minimumSize:
-                  const Size(160, 50),
-                backgroundColor: Color.fromRGBO(67, 160, 71, 1), 
-                foregroundColor: Colors.white,
+                minimumSize: const Size(160, 50),
               ),
-              child: const Text('Verify email and complete registration', 
-                style: TextStyle(fontSize: 16),
-              ), 
+              child: const Text('Verify email and complete registration'), 
             ),
           ],
         ),
