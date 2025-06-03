@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lab_manager/account/account_page.dart';
+import 'package:lab_manager/calculations/calculations_provider.dart';
 import 'package:lab_manager/calendar/event.dart';
 import 'package:lab_manager/objects/notification.dart';
 import 'package:lab_manager/journal/entry_editing_page.dart';
@@ -136,6 +137,7 @@ Future<void> main() async {
   final entryProvider = EntryProvider();
   final inventoryProvider = InventoryProvider();
   final timerProvider = TimerProvider();
+  final calculationsProvider = CalculationsProvider();
 
   runApp(
     MultiProvider(
@@ -148,6 +150,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => entryProvider),
         ChangeNotifierProvider(create: (_) => inventoryProvider),
         ChangeNotifierProvider(create: (_) => timerProvider),
+        ChangeNotifierProvider(create: (_) => calculationsProvider),
       ],
       child: MyApp(),
     ),
@@ -254,42 +257,22 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: [
               Tab(
-                icon: Icon(
-                  _selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined,
-                  size: 32,
-                ),
-                child: Text(
-                  'Journal',
-                  style: TextStyle(fontSize: 12), // change size here
-                ),
+                icon: Icon(_selectedTabIndex == 0 ? Icons.text_snippet : Icons.text_snippet_outlined, size: 32),
+                child: Text('Journal',style: TextStyle(fontSize: 11)),
               ),
               Tab(
-                icon: Icon(
-                  _selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined,
-                  size: 32,
-                ),
-                child: Text(
-                  'Calendar',
-                  style: TextStyle(fontSize: 12),
-                ),
+                icon: Icon(_selectedTabIndex == 1 ? Icons.calendar_month : Icons.calendar_month_outlined, size: 32),
+                child: Text('Calendar',style: TextStyle(fontSize: 11)),
               ),
               Tab(
-                icon: Icon(
-                  _selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined,
-                  size: 32,
-                ),
-                child: Text(
-                  'Calculations',
-                  style: TextStyle(fontSize: 12),
-                ),
+                icon: Icon(_selectedTabIndex == 2 ? Icons.calculate : Icons.calculate_outlined, size: 32),
+                child: Text('Calculations', style: TextStyle(fontSize: 11)),
               ),
               Tab(
                 icon: _selectedTabIndex == 3
-                    ? Image.asset('assets/lab_panel_verde.png', height: 32) // optional size
+                    ? Image.asset('assets/lab_panel_verde.png', height: 32)
                     : Image.asset('assets/lab_panel_gris.png', height: 32),
-                child: Text(
-                  'Inventory',
-                  style: TextStyle(fontSize: 12),
+                child: Text('Inventory', style: TextStyle(fontSize: 11),
                 ),
               ),
             ],

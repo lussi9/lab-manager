@@ -30,7 +30,6 @@ class CalendarWidgetState extends State<CalendarWidget>{
       view: CalendarView.month,
       controller: calendarController,
       todayHighlightColor: Theme.of(context).colorScheme.primary,
-      //todayTextStyle: TextStyle(color: Color(0xFFF2F2F2)),
       selectionDecoration: BoxDecoration(
         color: Colors.transparent,
         border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
@@ -42,7 +41,7 @@ class CalendarWidgetState extends State<CalendarWidget>{
       allowViewNavigation: true, //Permitir navegar entre vistas
       showTodayButton: true, //Mostrar boton de hoy
       showDatePickerButton: true, //Mostrar boton de seleccion de fecha
-      allowedViews: <CalendarView>
+      allowedViews: <CalendarView> //Vistas permitidas
         [
           CalendarView.day,
           CalendarView.week,
@@ -50,12 +49,13 @@ class CalendarWidgetState extends State<CalendarWidget>{
           CalendarView.month,
           CalendarView.schedule
         ],
-      //viewNavigationMode: ViewNavigationMode.snap,
       monthViewSettings: MonthViewSettings(
-        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        numberOfWeeksInView: getNumberOfWeeks() //Numero de semanas flexible
+        ),
       scheduleViewSettings: ScheduleViewSettings(
         appointmentItemHeight: 50),
-      appointmentTextStyle: TextStyle(fontSize: 13),
+      appointmentTextStyle: TextStyle(fontSize: 14),
       appointmentTimeTextFormat: 'HH:mm',
       onTap: calendarTapped,
       onLongPress: (CalendarLongPressDetails details) {
@@ -83,6 +83,17 @@ class CalendarWidgetState extends State<CalendarWidget>{
               builder: (BuildContext context) => EventEditingPage(selectedEvent: _selectedEvent)),
         );
       });
+    }
+  }
+
+  int getNumberOfWeeks() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    if (screenHeight > 800) {
+      return 6; // Show more weeks on taller screens
+    } else if (screenHeight > 600) {
+      return 5;
+    } else {
+      return 4; // Default for smaller screens
     }
   }
 }

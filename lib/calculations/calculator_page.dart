@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lab_manager/calculations/calculation.dart';
+import 'package:lab_manager/calculations/calculations_provider.dart';
 import 'package:lab_manager/objects/button.dart';
 import 'package:math_expressions/math_expressions.dart';
+import 'package:provider/provider.dart';
 
 class CalculatorPage extends StatefulWidget {
   const CalculatorPage({super.key});
@@ -14,6 +17,12 @@ class CalculatorPageState extends State<CalculatorPage> {
   var result = '0';
   int parenthesesCount = 0;
   List<String> history = [];
+
+  @override
+  void initState(){
+    super.initState();
+    Provider.of<CalculationsProvider>(context, listen: false).loadCalculations();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +72,7 @@ class CalculatorPageState extends State<CalculatorPage> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(
                 onPressed: () {
+                  Provider.of<CalculationsProvider>(context, listen: false).clearHistory('calculations');
                   setState(() {
                     history.clear();
                   });
@@ -270,6 +280,7 @@ class CalculatorPageState extends State<CalculatorPage> {
         }
         history.add('$finalUserInput = $result'); // Add to history
       });
+      Provider.of<CalculationsProvider>(context, listen: false).addCalculation(Calculation(calc: '$finalUserInput = $result'));
     } catch (e) {
       setState(() {
         result = "Error"; // Handle invalid expressions

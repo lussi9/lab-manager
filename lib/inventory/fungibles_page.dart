@@ -19,6 +19,7 @@ class FungiblesPageState extends State<FungiblesPage> {
   @override
   void initState(){
     super.initState();
+    Provider.of<InventoryProvider>(context, listen: false).loadFungibles(widget.folder.documentId!);
   }
 
   @override

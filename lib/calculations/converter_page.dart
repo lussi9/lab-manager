@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lab_manager/calculations/calculation.dart';
+import 'package:lab_manager/calculations/calculations_provider.dart';
+import 'package:provider/provider.dart';
 
 class ConverterView extends StatefulWidget {
   @override
@@ -69,8 +72,15 @@ class _ConverterViewState extends State<ConverterView> {
       if (history.length >= 30) {
         history.removeAt(0); // Remove the oldest
       }
-      history.add('$inputValue $fromUnit = $result $toUnit'); // Add to history
+      history.add('$inputValue $fromUnit = $result $toUnit');
+      Provider.of<CalculationsProvider>(context, listen: false).addConversion(Calculation(calc: '$inputValue $fromUnit = $result $toUnit'));
     });
+  }
+
+    @override
+  void initState(){
+    super.initState();
+    Provider.of<CalculationsProvider>(context, listen: false).loadCalculations();
   }
 
   @override
@@ -113,6 +123,7 @@ class _ConverterViewState extends State<ConverterView> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(
                 onPressed: () {
+                  Provider.of<CalculationsProvider>(context, listen: false).clearHistory('conversions');
                   setState(() {
                     history.clear();
                   });

@@ -42,7 +42,6 @@ class EventProvider extends ChangeNotifier {
       notifyListeners();
           
     } catch (e) {
-      // Handle any error
       print('Error adding event: $e');
     }
   }
